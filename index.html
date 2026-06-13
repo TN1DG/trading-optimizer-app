@@ -170,14 +170,14 @@ const DEFAULT = {
   marketCondition:"",
   marketBias:"",
   checklist:[
-    {id:1,text:"Ranging or trending (Bull/Bear)",checked:false,options:[],selectedOption:""},
-    {id:2,text:"Mark the following",checked:false,options:[],selectedOption:""},
-    {id:3,text:"Break out",checked:false,options:[],selectedOption:""},
-    {id:4,text:"Daily H+L, Session H+L",checked:false,options:[],selectedOption:""},
-    {id:5,text:"Order blocks & Breaker blocks",checked:false,options:[],selectedOption:""},
-    {id:6,text:"Support + Resistance",checked:false,options:[],selectedOption:""},
-    {id:7,text:"Higher time frame block",checked:false,options:[],selectedOption:""},
-    {id:8,text:"Apply volume tool",checked:false,options:[],selectedOption:""}
+    {id:1,text:"Ranging or trending (Bull/Bear)",checked:false,options:[],selectedOptions:[]},
+    {id:2,text:"Mark the following",checked:false,options:[],selectedOptions:[]},
+    {id:3,text:"Break out",checked:false,options:[],selectedOptions:[]},
+    {id:4,text:"Daily H+L, Session H+L",checked:false,options:[],selectedOptions:[]},
+    {id:5,text:"Order blocks & Breaker blocks",checked:false,options:[],selectedOptions:[]},
+    {id:6,text:"Support + Resistance",checked:false,options:[],selectedOptions:[]},
+    {id:7,text:"Higher time frame block",checked:false,options:[],selectedOptions:[]},
+    {id:8,text:"Apply volume tool",checked:false,options:[],selectedOptions:[]}
   ],
   rules:[
     {id:101,text:"Do not enter rushed",checked:false},
@@ -227,7 +227,7 @@ function render(){
     state[col].forEach((item,i)=>{
       if(col==='checklist'){
         if(!item.options)item.options=[];
-        if(item.selectedOption===undefined)item.selectedOption='';
+        if(!Array.isArray(item.selectedOptions))item.selectedOptions=item.selectedOption?[item.selectedOption]:[];
       }
 
       const editorOpen=col==='checklist'&&openEditors.has(item.id);
@@ -263,9 +263,9 @@ function render(){
         chips.onclick=e=>e.stopPropagation();
         item.options.forEach(o=>{
           const chip=document.createElement('button');
-          chip.className='chip'+(item.selectedOption===o?' selected':'');
+          chip.className='chip'+(item.selectedOptions.includes(o)?' selected':'');
           chip.textContent=o;
-          chip.onclick=e=>{e.stopPropagation();selectOption(col,i,item.selectedOption===o?'':o);};
+          chip.onclick=e=>{e.stopPropagation();selectOption(col,i,o);};
           chips.appendChild(chip);
         });
         wrap.appendChild(chips);
@@ -333,7 +333,11 @@ function toggleEditor(col,i,e){
 }
 
 function selectOption(col,i,val){
-  state[col][i].selectedOption=val;
+  const item=state[col][i];
+  if(!Array.isArray(item.selectedOptions))item.selectedOptions=[];
+  const idx=item.selectedOptions.indexOf(val);
+  if(idx===-1)item.selectedOptions.push(val);
+  else item.selectedOptions.splice(idx,1);
   save();render();renderMarket();
 }
 
@@ -353,7 +357,7 @@ function deleteOption(col,i,oi){
   const item=state[col][i];
   const removed=item.options[oi];
   item.options.splice(oi,1);
-  if(item.selectedOption===removed)item.selectedOption='';
+  if(Array.isArray(item.selectedOptions))item.selectedOptions=item.selectedOptions.filter(o=>o!==removed);
   save();render();
 }
 
@@ -361,8 +365,15 @@ function editOption(col,i,oi,val){
   const item=state[col][i];
   const old=item.options[oi];
   const trimmed=val.trim();
-  if(!trimmed){item.options.splice(oi,1);if(item.selectedOption===old)item.selectedOption='';}
-  else{if(item.selectedOption===old)item.selectedOption=trimmed;item.options[oi]=trimmed;}
+  if(!Array.isArray(item.selectedOptions))item.selectedOptions=[];
+  if(!trimmed){
+    item.options.splice(oi,1);
+    item.selectedOptions=item.selectedOptions.filter(o=>o!==old);
+  } else {
+    const si=item.selectedOptions.indexOf(old);
+    if(si!==-1)item.selectedOptions[si]=trimmed;
+    item.options[oi]=trimmed;
+  }
   save();render();
 }
 
