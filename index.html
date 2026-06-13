@@ -1,9 +1,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.cdnfonts.com/css/coolvetica" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden}
 body{background:#1a1a1a}
-.app{background:#1c1c1e;height:100vh;padding:1.5rem;padding-bottom:calc(1.5rem + 58px);font-family:var(--font-sans);display:flex;flex-direction:column;overflow:hidden}
+.app{background:#1c1c1e;height:100vh;padding:1.5rem;padding-bottom:calc(1.5rem + 58px);font-family:'Coolvetica',sans-serif;display:flex;flex-direction:column;overflow:hidden}
 .header{text-align:center;margin-bottom:1.5rem;flex-shrink:0}
 .header h1{font-size:22px;font-weight:500;color:#f5f5f5;letter-spacing:0.04em}
 .header p{font-size:13px;color:#888;margin-top:4px}
@@ -31,8 +32,10 @@ body{background:#1a1a1a}
 .item-num{font-size:12px;color:#666;min-width:18px;flex-shrink:0}
 .item-text{font-size:14px;color:#e0e0e0;flex:1;cursor:text}
 .item.checked .item-text{color:#4ade80}
-#rules-list .item-text{color:#ef4444;font-weight:700}
-#rules-list .item.checked .item-text{color:#4ade80;font-weight:700}
+#rules-list .item-text{color:#ef4444;font-weight:700;text-transform:uppercase}
+#rules-list .item.checked .item-text{color:#4ade80;font-weight:700;text-transform:uppercase}
+#rules-list .item-edit-input{text-transform:uppercase}
+#rules-input{text-transform:uppercase}
 .item-edit-input{flex:1;background:transparent;border:none;border-bottom:1px solid #f97316;outline:none;font-size:14px;color:#e0e0e0;padding:0 2px;font-family:inherit;cursor:text}
 .star{font-size:14px;color:#f97316;flex-shrink:0}
 .item.checked .star{color:#4ade80}
