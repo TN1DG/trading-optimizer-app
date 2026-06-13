@@ -4,11 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Running the app
 
-Open `fx_boyz_checklist.html` directly in a browser — no build step, no server, no dependencies. On Windows:
+Open `index.html` directly in a browser — no build step, no server, no dependencies. On Windows:
 
 ```powershell
-Start-Process "fx_boyz_checklist.html"
+Start-Process "index.html"
 ```
+
+Deployed on Vercel — `index.html` is the entry point served at `/`.
 
 ## Architecture
 
