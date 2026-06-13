@@ -51,6 +51,11 @@ body{background:#1a1a1a}
 .add-row input::placeholder{color:#555}
 .add-btn{background:#f97316;border:none;border-radius:8px;padding:8px 14px;font-size:13px;color:#fff;cursor:pointer;font-weight:500;flex-shrink:0}
 .add-btn:hover{background:#ea6a0a}
+.market-bar{display:flex;gap:10px;justify-content:center;margin-bottom:1.2rem}
+.market-btn{flex:1;max-width:150px;padding:10px 0;border-radius:10px;border:0.5px solid #3a3a3e;background:#252528;font-size:13px;font-weight:600;color:#555;cursor:pointer;letter-spacing:0.06em;text-transform:uppercase;transition:all 0.2s}
+.market-btn:hover{border-color:#666;color:#888}
+.market-btn.trending{background:#1e1800;border-color:#a07c00;color:#f5c518;box-shadow:0 0 12px rgba(245,197,24,0.15)}
+.market-btn.ranging{background:#222225;border-color:#666;color:#9ca3af;box-shadow:0 0 12px rgba(156,163,175,0.1)}
 .reset-btn{display:block;margin:1.2rem auto 0;background:none;border:0.5px solid #444;border-radius:8px;padding:6px 18px;font-size:12px;color:#666;cursor:pointer}
 .reset-btn:hover{border-color:#666;color:#999}
 </style>
@@ -61,6 +66,10 @@ body{background:#1a1a1a}
   <div class="header">
     <h1>FX BOYZ</h1>
     <p>Rules + Checklist</p>
+  </div>
+  <div class="market-bar">
+    <button class="market-btn" id="btn-trending" onclick="setMarket('trending')">Trending</button>
+    <button class="market-btn" id="btn-ranging" onclick="setMarket('ranging')">Ranging</button>
   </div>
   <div class="columns">
     <div class="col">
@@ -85,6 +94,7 @@ body{background:#1a1a1a}
 
 <script>
 const DEFAULT = {
+  marketCondition:"",
   checklist:[
     {id:1,text:"Ranging or trending (Bull/Bear)",checked:false,options:[],selectedOption:""},
     {id:2,text:"Mark the following",checked:false,options:[],selectedOption:""},
@@ -111,6 +121,16 @@ function load(){
   return JSON.parse(JSON.stringify(DEFAULT));
 }
 function save(){try{localStorage.setItem('fxboyz',JSON.stringify(state));}catch(e){}}
+
+function setMarket(val){
+  state.marketCondition=state.marketCondition===val?'':val;
+  save();renderMarket();
+}
+function renderMarket(){
+  const mc=state.marketCondition||'';
+  document.getElementById('btn-trending').className='market-btn'+(mc==='trending'?' trending':'');
+  document.getElementById('btn-ranging').className='market-btn'+(mc==='ranging'?' ranging':'');
+}
 
 function escHtml(s){
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -262,5 +282,7 @@ document.getElementById('checklist-input').addEventListener('keydown',e=>{if(e.k
 document.getElementById('rules-input').addEventListener('keydown',e=>{if(e.key==='Enter')addItem('rules');});
 
 state=load();
+if(!state.marketCondition)state.marketCondition='';
 render();
+renderMarket();
 </script>
