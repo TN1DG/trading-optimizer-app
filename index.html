@@ -3,7 +3,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden}
 body{background:#1a1a1a}
-.app{background:#1c1c1e;height:100vh;padding:1.5rem;font-family:var(--font-sans);display:flex;flex-direction:column;overflow:hidden}
+.app{background:#1c1c1e;height:100vh;padding:1.5rem;padding-bottom:calc(1.5rem + 58px);font-family:var(--font-sans);display:flex;flex-direction:column;overflow:hidden}
 .header{text-align:center;margin-bottom:1.5rem;flex-shrink:0}
 .header h1{font-size:22px;font-weight:500;color:#f5f5f5;letter-spacing:0.04em}
 .header p{font-size:13px;color:#888;margin-top:4px}
@@ -70,7 +70,7 @@ body{background:#1a1a1a}
 
 @media (max-width:640px){
   html,body{overflow:auto;height:auto}
-  .app{height:auto;min-height:100svh;overflow:visible;padding:1rem}
+  .app{height:auto;min-height:100svh;overflow:visible;padding:1rem;padding-bottom:calc(1rem + 90px)}
   .header{margin-bottom:1rem}
   .columns{grid-template-columns:1fr;flex:none;min-height:auto;gap:0.75rem}
   .col{overflow:visible}
@@ -80,12 +80,35 @@ body{background:#1a1a1a}
   .market-btn{padding:11px 0;font-size:12px}
   .add-btn,.add-opt-btn{font-size:14px}
   .reset-btn{margin-bottom:1rem}
+  #timer-bar{padding:10px 1rem;gap:8px;flex-wrap:wrap}
+  .timer-label{display:none}
+  #timer-display{font-size:22px;min-width:62px}
+  .timer-set input{width:46px;font-size:16px;padding:6px}
+  .timer-btns{width:100%;justify-content:center;margin-left:0;gap:10px}
+  .timer-btn{flex:1;max-width:100px;padding:8px 0;font-size:13px;text-align:center}
 }
 
 @media (min-width:641px) and (max-width:1024px){
-  .app{padding:1.2rem}
+  .app{padding:1.2rem;padding-bottom:calc(1.2rem + 58px)}
   .header h1{font-size:20px}
 }
+#timer-bar{position:fixed;bottom:0;left:0;right:0;background:#18181b;border-top:0.5px solid #2e2e32;padding:12px 1.5rem;display:flex;align-items:center;gap:14px;z-index:200;user-select:none}
+#timer-display{font-size:26px;font-weight:700;color:#f5f5f5;font-variant-numeric:tabular-nums;letter-spacing:0.02em;min-width:74px}
+.timer-label{font-size:11px;color:#555;text-transform:uppercase;letter-spacing:0.08em;flex-shrink:0}
+.timer-set{display:flex;align-items:center;gap:6px}
+.timer-set input{width:50px;background:#2c2c30;border:0.5px solid #444;border-radius:7px;padding:6px 8px;font-size:14px;color:#e0e0e0;text-align:center;outline:none;-moz-appearance:textfield}
+.timer-set input::-webkit-inner-spin-button,.timer-set input::-webkit-outer-spin-button{-webkit-appearance:none}
+.timer-set input:focus{border-color:#f97316}
+.timer-set span{color:#555;font-size:16px;font-weight:300}
+.timer-btns{display:flex;gap:8px;margin-left:auto}
+.timer-btn{background:#2c2c30;border:0.5px solid #444;border-radius:8px;padding:7px 16px;font-size:12px;font-weight:500;color:#bbb;cursor:pointer;transition:background 0.15s,color 0.15s;flex-shrink:0}
+.timer-btn:hover{background:#3a3a3e;color:#fff}
+.timer-btn.go{background:#f97316;border-color:#f97316;color:#fff}
+.timer-btn.go:hover{background:#ea6a0a}
+#timer-bar.done{cursor:pointer}
+#timer-bar.done #timer-display{color:#f97316}
+@keyframes timerFlicker{0%,100%{opacity:1}45%{opacity:0.08}55%{opacity:0.08}}
+#timer-bar.done{animation:timerFlicker 0.55s ease-in-out infinite}
 </style>
 
 <h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">FX Boyz trading checklist and rules manager</h2>
@@ -122,6 +145,21 @@ body{background:#1a1a1a}
     </div>
   </div>
   <button class="reset-btn" onclick="resetAll()">Reset all checks</button>
+</div>
+
+<div id="timer-bar">
+  <span class="timer-label">Timer</span>
+  <div id="timer-display">00:00</div>
+  <div class="timer-set" id="timer-set">
+    <input id="timer-min" type="number" min="0" max="99" placeholder="mm" />
+    <span>:</span>
+    <input id="timer-sec" type="number" min="0" max="59" placeholder="ss" />
+  </div>
+  <div class="timer-btns">
+    <button class="timer-btn go" id="timer-start-btn" onclick="timerStart()">Start</button>
+    <button class="timer-btn" id="timer-pause-btn" onclick="timerPause()" style="display:none">Pause</button>
+    <button class="timer-btn" id="timer-reset-btn" onclick="timerReset()">Reset</button>
+  </div>
 </div>
 
 <script>
@@ -326,4 +364,66 @@ if(!state.marketCondition)state.marketCondition='';
 if(!state.marketBias)state.marketBias='';
 render();
 renderMarket();
+
+// --- Timer ---
+let timerInterval=null,timerLeft=0,timerRunning=false,timerFinished=false;
+
+function timerFmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+
+function timerTick(){
+  timerLeft--;
+  document.getElementById('timer-display').textContent=timerFmt(timerLeft);
+  if(timerLeft<=0){
+    clearInterval(timerInterval);timerInterval=null;timerRunning=false;timerFinished=true;
+    const bar=document.getElementById('timer-bar');
+    bar.classList.add('done');
+    bar.addEventListener('click',timerDismiss);
+  }
+}
+
+function timerDismiss(){timerReset();}
+
+function timerStart(){
+  if(timerRunning)return;
+  if(!timerFinished&&timerLeft===0){
+    const m=parseInt(document.getElementById('timer-min').value)||0;
+    const s=parseInt(document.getElementById('timer-sec').value)||0;
+    timerLeft=m*60+s;
+    if(timerLeft<=0)return;
+  }
+  timerFinished=false;
+  const bar=document.getElementById('timer-bar');
+  bar.classList.remove('done');
+  bar.removeEventListener('click',timerDismiss);
+  document.getElementById('timer-set').style.display='none';
+  document.getElementById('timer-start-btn').style.display='none';
+  document.getElementById('timer-pause-btn').style.display='';
+  document.getElementById('timer-display').textContent=timerFmt(timerLeft);
+  timerRunning=true;
+  timerInterval=setInterval(timerTick,1000);
+}
+
+function timerPause(){
+  clearInterval(timerInterval);timerInterval=null;timerRunning=false;
+  document.getElementById('timer-start-btn').textContent='Resume';
+  document.getElementById('timer-start-btn').style.display='';
+  document.getElementById('timer-pause-btn').style.display='none';
+}
+
+function timerReset(){
+  clearInterval(timerInterval);timerInterval=null;timerRunning=false;timerFinished=false;timerLeft=0;
+  const bar=document.getElementById('timer-bar');
+  bar.classList.remove('done');
+  bar.removeEventListener('click',timerDismiss);
+  document.getElementById('timer-display').textContent='00:00';
+  document.getElementById('timer-set').style.display='';
+  document.getElementById('timer-start-btn').style.display='';
+  document.getElementById('timer-start-btn').textContent='Start';
+  document.getElementById('timer-pause-btn').style.display='none';
+  document.getElementById('timer-min').value='';
+  document.getElementById('timer-sec').value='';
+}
+
+document.getElementById('timer-min').addEventListener('keydown',e=>{if(e.key==='Enter')timerStart();});
+document.getElementById('timer-sec').addEventListener('keydown',e=>{if(e.key==='Enter')timerStart();});
 </script>
