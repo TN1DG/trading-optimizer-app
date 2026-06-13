@@ -1,0 +1,266 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#1a1a1a}
+.app{background:#1c1c1e;min-height:100vh;padding:1.5rem;font-family:var(--font-sans)}
+.header{text-align:center;margin-bottom:1.5rem}
+.header h1{font-size:22px;font-weight:500;color:#f5f5f5;letter-spacing:0.04em}
+.header p{font-size:13px;color:#888;margin-top:4px}
+.columns{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.col{background:#252528;border-radius:12px;padding:1rem}
+.col-title{font-size:13px;font-weight:500;color:#999;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:1rem;padding-bottom:0.5rem;border-bottom:0.5px solid #333}
+.item-wrap{margin-bottom:6px}
+.item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;border:0.5px solid #333;background:#2c2c30;transition:background 0.15s,border-color 0.15s;user-select:none}
+.item-wrap.editor-open .item{border-radius:8px 8px 0 0;border-bottom-color:#1e1e22}
+.item.checked{background:#1a2e1a;border-color:#2d5a2d}
+.item-wrap.editor-open .item.checked{border-bottom-color:#1e1e22}
+.item.dragging{opacity:0.4}
+.item.drag-over{border-color:#f97316;background:#2a2420}
+.drag-handle{color:#555;cursor:grab;font-size:16px;flex-shrink:0}
+.drag-handle:active{cursor:grabbing}
+.item-num{font-size:12px;color:#666;min-width:18px;flex-shrink:0}
+.item-text{font-size:14px;color:#e0e0e0;flex:1}
+.item.checked .item-text{color:#4ade80}
+.star{font-size:14px;color:#f97316;flex-shrink:0}
+.item.checked .star{color:#4ade80}
+.item-select{background:#252528;border:0.5px solid #555;border-radius:6px;padding:4px 6px;font-size:12px;color:#ccc;cursor:pointer;flex-shrink:0;max-width:130px}
+.item-select:focus{outline:none;border-color:#f97316}
+.opts-btn{opacity:0;background:none;border:none;color:#666;cursor:pointer;font-size:15px;padding:2px 4px;border-radius:4px;flex-shrink:0;transition:opacity 0.15s,color 0.15s}
+.item:hover .opts-btn{opacity:1}
+.opts-btn:hover{color:#f97316}
+.opts-btn.active{opacity:1;color:#f97316}
+.del-btn{background:none;border:none;color:#555;cursor:pointer;font-size:16px;padding:2px 4px;border-radius:4px;flex-shrink:0;transition:color 0.15s}
+.del-btn:hover{color:#ef4444}
+.opts-editor{background:#1e1e22;border:0.5px solid #333;border-top:none;border-radius:0 0 8px 8px;padding:10px 12px}
+.opts-editor-title{font-size:11px;color:#555;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px}
+.opts-empty{font-size:12px;color:#444;margin-bottom:8px}
+.opt-row{display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.opt-row input{flex:1;background:#2c2c30;border:0.5px solid #444;border-radius:6px;padding:5px 8px;font-size:12px;color:#e0e0e0;outline:none}
+.opt-row input:focus{border-color:#f97316}
+.opt-del{background:none;border:none;color:#555;cursor:pointer;font-size:14px;padding:2px 4px;border-radius:4px;transition:color 0.15s;flex-shrink:0}
+.opt-del:hover{color:#ef4444}
+.add-opt-row{display:flex;gap:6px;margin-top:8px;padding-top:8px;border-top:0.5px solid #2a2a2e}
+.add-opt-row input{flex:1;background:#2c2c30;border:0.5px solid #444;border-radius:6px;padding:5px 8px;font-size:12px;color:#e0e0e0;outline:none}
+.add-opt-row input:focus{border-color:#f97316}
+.add-opt-row input::placeholder{color:#555}
+.add-opt-btn{background:#f97316;border:none;border-radius:6px;padding:5px 12px;font-size:12px;color:#fff;cursor:pointer;font-weight:500;flex-shrink:0}
+.add-opt-btn:hover{background:#ea6a0a}
+.add-row{display:flex;gap:8px;margin-top:10px}
+.add-row input{flex:1;background:#1c1c1e;border:0.5px solid #444;border-radius:8px;padding:8px 12px;font-size:13px;color:#e0e0e0;outline:none}
+.add-row input:focus{border-color:#f97316}
+.add-row input::placeholder{color:#555}
+.add-btn{background:#f97316;border:none;border-radius:8px;padding:8px 14px;font-size:13px;color:#fff;cursor:pointer;font-weight:500;flex-shrink:0}
+.add-btn:hover{background:#ea6a0a}
+.reset-btn{display:block;margin:1.2rem auto 0;background:none;border:0.5px solid #444;border-radius:8px;padding:6px 18px;font-size:12px;color:#666;cursor:pointer}
+.reset-btn:hover{border-color:#666;color:#999}
+</style>
+
+<h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">FX Boyz trading checklist and rules manager</h2>
+
+<div class="app">
+  <div class="header">
+    <h1>FX BOYZ</h1>
+    <p>Rules + Checklist</p>
+  </div>
+  <div class="columns">
+    <div class="col">
+      <div class="col-title">Checklist</div>
+      <div id="checklist-list"></div>
+      <div class="add-row">
+        <input id="checklist-input" placeholder="Add checklist item..." />
+        <button class="add-btn" onclick="addItem('checklist')">Add</button>
+      </div>
+    </div>
+    <div class="col">
+      <div class="col-title">Rules</div>
+      <div id="rules-list"></div>
+      <div class="add-row">
+        <input id="rules-input" placeholder="Add rule..." />
+        <button class="add-btn" onclick="addItem('rules')">Add</button>
+      </div>
+    </div>
+  </div>
+  <button class="reset-btn" onclick="resetAll()">Reset all checks</button>
+</div>
+
+<script>
+const DEFAULT = {
+  checklist:[
+    {id:1,text:"Ranging or trending (Bull/Bear)",checked:false,options:[],selectedOption:""},
+    {id:2,text:"Mark the following",checked:false,options:[],selectedOption:""},
+    {id:3,text:"Break out",checked:false,options:[],selectedOption:""},
+    {id:4,text:"Daily H+L, Session H+L",checked:false,options:[],selectedOption:""},
+    {id:5,text:"Order blocks & Breaker blocks",checked:false,options:[],selectedOption:""},
+    {id:6,text:"Support + Resistance",checked:false,options:[],selectedOption:""},
+    {id:7,text:"Higher time frame block",checked:false,options:[],selectedOption:""},
+    {id:8,text:"Apply volume tool",checked:false,options:[],selectedOption:""}
+  ],
+  rules:[
+    {id:101,text:"Do not enter rushed",checked:false},
+    {id:102,text:"20 minute timer after loss",checked:false},
+    {id:103,text:"Do not reuse blocks over 2 times",checked:false},
+    {id:104,text:"Rule 4 — tap to edit",checked:false},
+    {id:105,text:"Rule 5 — tap to edit",checked:false},
+    {id:106,text:"Rule 6 — tap to edit",checked:false}
+  ]
+};
+
+let state;
+function load(){
+  try{const s=localStorage.getItem('fxboyz');if(s)return JSON.parse(s);}catch(e){}
+  return JSON.parse(JSON.stringify(DEFAULT));
+}
+function save(){try{localStorage.setItem('fxboyz',JSON.stringify(state));}catch(e){}}
+
+function escHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+const openEditors=new Set();
+let dragSrc=null,dragCol=null;
+
+function render(){
+  ['checklist','rules'].forEach(col=>{
+    const el=document.getElementById(col+'-list');
+    el.innerHTML='';
+    state[col].forEach((item,i)=>{
+      if(col==='checklist'){
+        if(!item.options)item.options=[];
+        if(item.selectedOption===undefined)item.selectedOption='';
+      }
+
+      const editorOpen=col==='checklist'&&openEditors.has(item.id);
+      const hasOpts=col==='checklist'&&item.options&&item.options.length>0;
+
+      const wrap=document.createElement('div');
+      wrap.className='item-wrap'+(editorOpen?' editor-open':'');
+
+      const div=document.createElement('div');
+      div.className='item'+(item.checked?' checked':'');
+      div.draggable=true;
+      div.dataset.idx=i;
+      div.dataset.col=col;
+
+      const selectHTML=hasOpts
+        ?`<select class="item-select" onclick="event.stopPropagation()" onchange="selectOption('${col}',${i},this.value)">
+            <option value="">— pick —</option>
+            ${item.options.map(o=>`<option value="${escHtml(o)}"${item.selectedOption===o?' selected':''}>${escHtml(o)}</option>`).join('')}
+          </select>`
+        :'';
+
+      const optsBtn=col==='checklist'
+        ?`<button class="opts-btn${editorOpen?' active':''}" title="Manage dropdown options" onclick="toggleEditor('${col}',${i},event)">&#9776;</button>`
+        :'';
+
+      div.innerHTML=`<span class="drag-handle" aria-hidden="true"><i class="ti ti-grip-vertical"></i></span><span class="item-num">${i+1}</span><span class="star" aria-hidden="true">✦</span><span class="item-text">${escHtml(item.text)}</span>${selectHTML}${optsBtn}<button class="del-btn" aria-label="Delete item" onclick="delItem('${col}',${i},event)">&#x2715;</button>`;
+
+      div.addEventListener('click',()=>toggleItem(col,i));
+      div.addEventListener('dragstart',e=>{dragSrc=i;dragCol=col;div.classList.add('dragging');e.dataTransfer.effectAllowed='move';});
+      div.addEventListener('dragend',()=>{document.querySelectorAll('.item').forEach(x=>x.classList.remove('dragging','drag-over'));});
+      div.addEventListener('dragover',e=>{e.preventDefault();div.classList.add('drag-over');});
+      div.addEventListener('dragleave',()=>div.classList.remove('drag-over'));
+      div.addEventListener('drop',e=>{e.preventDefault();div.classList.remove('drag-over');if(dragCol===col&&dragSrc!==null&&dragSrc!==i){const arr=state[col];const[moved]=arr.splice(dragSrc,1);arr.splice(i,0,moved);save();render();}dragSrc=null;dragCol=null;});
+
+      wrap.appendChild(div);
+
+      if(editorOpen){
+        const editor=document.createElement('div');
+        editor.className='opts-editor';
+        editor.onclick=e=>e.stopPropagation();
+        const opts=item.options||[];
+        editor.innerHTML=`
+          <div class="opts-editor-title">Dropdown options</div>
+          ${opts.length===0?'<div class="opts-empty">No options yet — add one below.</div>':''}
+          ${opts.map((o,oi)=>`
+            <div class="opt-row">
+              <input value="${escHtml(o)}" onchange="editOption('${col}',${i},${oi},this.value)" />
+              <button class="opt-del" title="Remove option" onclick="deleteOption('${col}',${i},${oi})">&#10005;</button>
+            </div>
+          `).join('')}
+          <div class="add-opt-row">
+            <input id="add-opt-${item.id}" placeholder="New option..." onkeydown="if(event.key==='Enter')addOption('${col}',${i})" />
+            <button class="add-opt-btn" onclick="addOption('${col}',${i})">Add</button>
+          </div>
+        `;
+        wrap.appendChild(editor);
+      }
+
+      el.appendChild(wrap);
+    });
+  });
+}
+
+function toggleItem(col,i){state[col][i].checked=!state[col][i].checked;save();render();}
+function delItem(col,i,e){e.stopPropagation();state[col].splice(i,1);save();render();}
+
+function addItem(col){
+  const inp=document.getElementById(col+'-input');
+  const txt=inp.value.trim();
+  if(!txt)return;
+  const ids=state[col].map(x=>x.id);
+  const newId=(ids.length?Math.max(...ids):0)+1;
+  const item={id:newId,text:txt,checked:false};
+  if(col==='checklist'){item.options=[];item.selectedOption='';}
+  state[col].push(item);
+  inp.value='';
+  save();render();
+}
+
+function resetAll(){
+  state.checklist.forEach(x=>{x.checked=false;});
+  state.rules.forEach(x=>x.checked=false);
+  save();render();
+}
+
+function toggleEditor(col,i,e){
+  e.stopPropagation();
+  const id=state[col][i].id;
+  if(openEditors.has(id))openEditors.delete(id);
+  else openEditors.add(id);
+  render();
+  if(openEditors.has(id)){
+    const inp=document.getElementById('add-opt-'+id);
+    if(inp)inp.focus();
+  }
+}
+
+function selectOption(col,i,val){
+  state[col][i].selectedOption=val;
+  save();
+}
+
+function addOption(col,i){
+  const item=state[col][i];
+  const inp=document.getElementById('add-opt-'+item.id);
+  const val=inp.value.trim();
+  if(!val)return;
+  if(!item.options)item.options=[];
+  item.options.push(val);
+  save();render();
+  const newInp=document.getElementById('add-opt-'+item.id);
+  if(newInp)newInp.focus();
+}
+
+function deleteOption(col,i,oi){
+  const item=state[col][i];
+  const removed=item.options[oi];
+  item.options.splice(oi,1);
+  if(item.selectedOption===removed)item.selectedOption='';
+  save();render();
+}
+
+function editOption(col,i,oi,val){
+  const item=state[col][i];
+  const old=item.options[oi];
+  const trimmed=val.trim();
+  if(!trimmed){item.options.splice(oi,1);if(item.selectedOption===old)item.selectedOption='';}
+  else{if(item.selectedOption===old)item.selectedOption=trimmed;item.options[oi]=trimmed;}
+  save();render();
+}
+
+document.getElementById('checklist-input').addEventListener('keydown',e=>{if(e.key==='Enter')addItem('checklist');});
+document.getElementById('rules-input').addEventListener('keydown',e=>{if(e.key==='Enter')addItem('rules');});
+
+state=load();
+render();
+</script>
