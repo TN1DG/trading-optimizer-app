@@ -29,8 +29,11 @@ body{background:#1a1a1a}
 .drag-handle{color:#555;cursor:grab;font-size:16px;flex-shrink:0}
 .drag-handle:active{cursor:grabbing}
 .item-num{font-size:12px;color:#666;min-width:18px;flex-shrink:0}
-.item-text{font-size:14px;color:#e0e0e0;flex:1}
+.item-text{font-size:14px;color:#e0e0e0;flex:1;cursor:text}
 .item.checked .item-text{color:#4ade80}
+#rules-list .item-text{color:#ef4444;font-weight:700}
+#rules-list .item.checked .item-text{color:#4ade80;font-weight:700}
+.item-edit-input{flex:1;background:transparent;border:none;border-bottom:1px solid #f97316;outline:none;font-size:14px;color:#e0e0e0;padding:0 2px;font-family:inherit;cursor:text}
 .star{font-size:14px;color:#f97316;flex-shrink:0}
 .item.checked .star{color:#4ade80}
 .opts-btn{opacity:0;background:none;border:none;color:#666;cursor:pointer;font-size:15px;padding:2px 4px;border-radius:4px;flex-shrink:0;transition:opacity 0.15s,color 0.15s}
@@ -249,6 +252,28 @@ function render(){
       div.innerHTML=`<span class="drag-handle" aria-hidden="true"><i class="ti ti-grip-vertical"></i></span><span class="item-num">${i+1}</span><span class="star" aria-hidden="true">✦</span><span class="item-text">${escHtml(item.text)}</span>${optsBtn}<button class="del-btn" aria-label="Delete item" onclick="delItem('${col}',${i},event)">&#x2715;</button>`;
 
       div.addEventListener('click',()=>toggleItem(col,i));
+      div.querySelector('.item-text').addEventListener('dblclick',e=>{
+        e.stopPropagation();
+        const span=div.querySelector('.item-text');
+        const inp=document.createElement('input');
+        inp.value=item.text;
+        inp.className='item-edit-input';
+        span.replaceWith(inp);
+        inp.focus();inp.select();
+        let done=false;
+        function commit(){
+          if(done)return;done=true;
+          const v=inp.value.trim();
+          if(v)state[col][i].text=v;
+          save();render();renderMarket();
+        }
+        inp.addEventListener('blur',commit);
+        inp.addEventListener('keydown',e2=>{
+          e2.stopPropagation();
+          if(e2.key==='Enter'){e2.preventDefault();commit();}
+          if(e2.key==='Escape'){done=true;render();renderMarket();}
+        });
+      });
       div.addEventListener('dragstart',e=>{dragSrc=i;dragCol=col;div.classList.add('dragging');e.dataTransfer.effectAllowed='move';});
       div.addEventListener('dragend',()=>{document.querySelectorAll('.item').forEach(x=>x.classList.remove('dragging','drag-over'));});
       div.addEventListener('dragover',e=>{e.preventDefault();div.classList.add('drag-over');});
