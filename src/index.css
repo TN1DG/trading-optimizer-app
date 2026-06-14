@@ -80,13 +80,12 @@ body{background:#1a1a1a}
 .market-btn.bear{background:#2a0f0f;border-color:#dc2626;color:#f87171;box-shadow:0 0 12px rgba(248,113,113,0.15)}
 .session-top{display:flex;gap:8px;margin-bottom:8px}
 .ms-panel{display:flex;flex-direction:column;gap:4px;flex-shrink:0;background:#2c2c30;border:0.5px solid #333;border-radius:10px;padding:8px 10px}
-.ms-panel-title,.side-panel-title{font-size:10px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:2px}
+.ms-panel-title,.side-panel-title{font-size:11px;font-weight:800;color:#bbb;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:2px}
 .news-panel{flex:1;background:#2c2c30;border:0.5px solid #333;border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:8px}
 .side-panel{flex:1;background:#2c2c30;border:0.5px solid #333;border-radius:10px;padding:8px 10px}
 .side-table{width:100%;border-collapse:collapse}
 .side-table td{padding:5px 4px;vertical-align:middle}
 .side-table-label{font-size:11px;font-weight:600;color:#aaa;text-transform:uppercase;letter-spacing:0.06em;white-space:nowrap}
-.side-table-currency{font-size:12px;color:#666;padding:0 2px;width:12px}
 .side-table-input-cell{width:100%}
 .side-table-input{width:100%;background:transparent;border:none;border-bottom:0.5px solid #444;outline:none;font-size:13px;font-weight:600;color:#f5f5f5;padding:2px 4px;font-family:inherit;-moz-appearance:textfield}
 .side-table-input::-webkit-inner-spin-button,.side-table-input::-webkit-outer-spin-button{-webkit-appearance:none}
@@ -138,7 +137,7 @@ body{background:#1a1a1a}
   .header p{font-size:13px}
   .columns{gap:0.75rem}
   .session-top{flex-wrap:wrap}
-  .ms-panel{flex-direction:row;flex-wrap:wrap}
+  .ms-panel{flex-direction:column}
   .side-panel,.news-panel{min-width:140px}
   #rules-list .item-text{font-size:15px}
   #rules-list .item-edit-input{font-size:15px}
@@ -156,20 +155,28 @@ body{background:#1a1a1a}
 /* ── Mobile  (≤ 640px) ── */
 @media (max-width:640px){
   html,body{overflow:auto;height:auto}
-  .app{height:auto;min-height:100svh;overflow:visible;padding:0.75rem;padding-bottom:calc(0.75rem + 80px)}
+  .app{height:auto;min-height:100svh;overflow:visible;padding:0.75rem;padding-bottom:calc(0.75rem + 96px)}
   .header{margin-bottom:0.75rem}
   .header h1{font-size:18px}
   .header p{font-size:12px}
   .subtitle-input{width:200px;font-size:12px}
   .columns{grid-template-columns:1fr;flex:none;min-height:auto;gap:0.75rem}
-  .col{overflow:visible;padding:0.75rem}
-  .checklist-body,#rules-list{flex:none;max-height:38vh;overflow-y:auto}
+  .col{overflow:visible;padding:0.75rem;min-height:0}
+  /* reset height:0 so lists expand naturally on mobile */
+  .checklist-body,#rules-list{flex:none;height:auto;max-height:40vh;overflow-y:auto}
+  /* session-top panels stack vertically */
   .session-top{flex-direction:column;gap:6px}
-  .ms-panel{flex-direction:row;flex-wrap:wrap;gap:4px}
-  .checklist-section .market-bar{flex-wrap:wrap}
-  .side-panel,.news-panel{width:100%}
+  .side-panel,.news-panel,.ms-panel{width:100%}
+  .ms-panel{flex-direction:column;gap:6px}
+  .checklist-section .market-bar{flex-wrap:wrap;gap:4px}
+  /* table inputs */
   .side-table-label{font-size:10px}
-  .max-loss-row .side-table-input{width:50px}
+  .max-loss-row .side-table-input{width:44px}
+  .news-time-box{min-width:60px}
+  .news-time{font-size:14px}
+  .news-time-input{font-size:14px;width:60px}
+  .news-top{flex-wrap:wrap;gap:6px}
+  /* items */
   .item{padding:10px 8px;gap:8px}
   .item-text{font-size:13px}
   .add-row input,.add-opt-row input,.opt-row input{font-size:16px}
@@ -177,14 +184,11 @@ body{background:#1a1a1a}
   #rules-list .item-text{font-size:14px;letter-spacing:0.03em}
   #rules-list .item-edit-input{font-size:14px}
   #rules-list .item{padding:10px 8px}
-  .market-btn{padding:9px 0;font-size:11px}
+  .market-btn{padding:8px 0;font-size:11px}
   .section-title{font-size:12px}
   .col-title{font-size:11px;margin-bottom:0.6rem}
   .bottom-bar{margin-bottom:0.75rem;gap:8px}
-  .news-top{flex-wrap:wrap;gap:6px}
-  .news-time{font-size:14px}
-  .news-time-input{font-size:14px;width:60px}
-  .app{padding-bottom:calc(0.75rem + 96px)}
+  /* timer */
   #timer-bar{padding:6px 0.75rem;flex-wrap:wrap;row-gap:6px;column-gap:8px}
   .timer-label{font-size:10px;flex:1}
   .timer-set{order:2}
@@ -197,13 +201,15 @@ body{background:#1a1a1a}
 
 /* ── Very small phones  (≤ 380px) ── */
 @media (max-width:380px){
-  .app{padding:0.5rem;padding-bottom:calc(0.5rem + 96px)}
+  .app{padding:0.5rem;padding-bottom:calc(0.5rem + 100px)}
   .header h1{font-size:16px}
   .col{padding:0.6rem}
+  .checklist-body,#rules-list{max-height:35vh}
   .item{gap:6px;padding:9px 6px}
   .item-text{font-size:12px}
   #rules-list .item-text{font-size:12px}
   .section-title{font-size:11px}
+  .max-loss-row .side-table-input{width:38px}
   #timer-bar{padding:5px 0.5rem}
   .timer-label{font-size:9px}
   .timer-set input{width:36px;font-size:13px}
@@ -213,7 +219,7 @@ body{background:#1a1a1a}
 
 #timer-bar{position:fixed;bottom:0;left:0;right:0;background:#18181b;border-top:0.5px solid #2e2e32;padding:12px 1.5rem;display:flex;align-items:center;gap:14px;z-index:200;user-select:none}
 #timer-display{font-size:26px;font-weight:700;color:#f5f5f5;font-variant-numeric:tabular-nums;letter-spacing:0.02em;min-width:74px}
-.timer-label{font-size:11px;color:#555;text-transform:uppercase;letter-spacing:0.08em;flex-shrink:0}
+.timer-label{font-size:11px;font-weight:800;color:#bbb;text-transform:uppercase;letter-spacing:0.08em;flex-shrink:0}
 .timer-set{display:flex;align-items:center;gap:6px}
 .timer-set input{width:50px;background:#2c2c30;border:0.5px solid #444;border-radius:7px;padding:6px 8px;font-size:14px;color:#e0e0e0;text-align:center;outline:none;-moz-appearance:textfield}
 .timer-set input::-webkit-inner-spin-button,.timer-set input::-webkit-outer-spin-button{-webkit-appearance:none}
