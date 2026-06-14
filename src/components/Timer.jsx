@@ -65,8 +65,7 @@ export default function Timer() {
       className={done ? 'done' : ''}
       onClick={done ? reset : undefined}
     >
-      <span className="timer-label">Timer</span>
-      <div id="timer-display">{fmt(left)}</div>
+      <span className="timer-label">Trade Cool Down</span>
 
       {showInputs && (
         <div className="timer-set">
@@ -90,16 +89,19 @@ export default function Timer() {
         </div>
       )}
 
-      <div className="timer-btns">
-        {!running && !done && (
-          <button className="timer-btn go" onClick={start}>
-            {left > 0 ? 'Resume' : 'Start'}
-          </button>
-        )}
-        {running && (
-          <button className="timer-btn" onClick={pause}>Pause</button>
-        )}
-        <button className="timer-btn" onClick={reset}>Reset</button>
+      <div className="timer-main">
+        <div id="timer-display">{fmt(left)}</div>
+        <div className="timer-btns">
+          {!running && !done && (
+            <button className="timer-btn go" onClick={start}>
+              {left > 0 ? 'Resume' : 'Start'}
+            </button>
+          )}
+          {running && (
+            <button className="timer-btn" onClick={pause}>Pause</button>
+          )}
+          <button className="timer-btn" onClick={reset}>Reset</button>
+        </div>
       </div>
     </div>
   )

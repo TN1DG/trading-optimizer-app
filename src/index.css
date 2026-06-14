@@ -130,7 +130,10 @@ body{background:#1a1a1a}
 
 /* ── Small tablet / large phone  (641px – 900px) ── */
 @media (min-width:641px) and (max-width:900px){
-  .app{padding:1rem;padding-bottom:calc(1rem + 58px)}
+  .app{padding:1rem;padding-bottom:calc(1rem + 62px)}
+  #timer-bar{padding:10px 1rem;gap:10px}
+  #timer-display{font-size:22px}
+  .timer-btn{padding:6px 12px}
   .header h1{font-size:18px}
   .header p{font-size:13px}
   .columns{gap:0.75rem}
@@ -181,23 +184,31 @@ body{background:#1a1a1a}
   .news-top{flex-wrap:wrap;gap:6px}
   .news-time{font-size:14px}
   .news-time-input{font-size:14px;width:60px}
-  #timer-bar{padding:8px 0.75rem;gap:6px;flex-wrap:wrap}
-  .timer-label{display:none}
-  #timer-display{font-size:20px;min-width:56px}
-  .timer-set input{width:42px;font-size:15px;padding:5px}
-  .timer-btns{width:100%;justify-content:center;margin-left:0;gap:8px}
+  .app{padding-bottom:calc(0.75rem + 96px)}
+  #timer-bar{padding:6px 0.75rem;flex-wrap:wrap;row-gap:6px;column-gap:8px}
+  .timer-label{font-size:10px;flex:1}
+  .timer-set{order:2}
+  .timer-set input{width:40px;font-size:14px;padding:4px 6px}
+  .timer-main{order:3;margin-left:0;width:100%;justify-content:center}
+  #timer-display{font-size:20px;min-width:52px}
+  .timer-btns{gap:6px}
   .timer-btn{flex:1;max-width:90px;padding:7px 0;font-size:12px;text-align:center}
 }
 
 /* ── Very small phones  (≤ 380px) ── */
 @media (max-width:380px){
-  .app{padding:0.5rem;padding-bottom:calc(0.5rem + 80px)}
+  .app{padding:0.5rem;padding-bottom:calc(0.5rem + 96px)}
   .header h1{font-size:16px}
   .col{padding:0.6rem}
   .item{gap:6px;padding:9px 6px}
   .item-text{font-size:12px}
   #rules-list .item-text{font-size:12px}
   .section-title{font-size:11px}
+  #timer-bar{padding:5px 0.5rem}
+  .timer-label{font-size:9px}
+  .timer-set input{width:36px;font-size:13px}
+  #timer-display{font-size:18px;min-width:46px}
+  .timer-btn{font-size:11px;padding:6px 0}
 }
 
 #timer-bar{position:fixed;bottom:0;left:0;right:0;background:#18181b;border-top:0.5px solid #2e2e32;padding:12px 1.5rem;display:flex;align-items:center;gap:14px;z-index:200;user-select:none}
@@ -208,7 +219,8 @@ body{background:#1a1a1a}
 .timer-set input::-webkit-inner-spin-button,.timer-set input::-webkit-outer-spin-button{-webkit-appearance:none}
 .timer-set input:focus{border-color:#f97316}
 .timer-set span{color:#555;font-size:16px;font-weight:300}
-.timer-btns{display:flex;gap:8px;margin-left:auto}
+.timer-main{display:flex;align-items:center;gap:10px;margin-left:auto}
+.timer-btns{display:flex;gap:8px}
 .timer-btn{background:#2c2c30;border:0.5px solid #444;border-radius:8px;padding:7px 16px;font-size:12px;font-weight:500;color:#bbb;cursor:pointer;transition:background 0.15s,color 0.15s;flex-shrink:0}
 .timer-btn:hover{background:#3a3a3e;color:#fff}
 .timer-btn.go{background:#f97316;border-color:#f97316;color:#fff}
