@@ -5,6 +5,7 @@ export const DEFAULT = {
   marketBias: '',
   subtitle: 'Rules + Checklist',
   newsTime: '--:--',
+  newsActive: false,
   lowImp: false,
   highImp: false,
   currency: 'USD',
@@ -49,6 +50,9 @@ export function reducer(state, action) {
 
     case 'SET_NEWS_TIME':
       return { ...state, newsTime: action.payload }
+
+    case 'TOGGLE_NEWS':
+      return { ...state, newsActive: !state.newsActive }
 
     case 'TOGGLE_LOW_IMP':
       return { ...state, lowImp: !state.lowImp }

@@ -56,6 +56,7 @@ function loadState() {
       if (!parsed.marketBias) parsed.marketBias = ''
       if (!parsed.subtitle) parsed.subtitle = 'Rules + Checklist'
       if (!parsed.newsTime) parsed.newsTime = '--:--'
+      if (parsed.newsActive === undefined) parsed.newsActive = false
       if (parsed.lowImp === undefined) parsed.lowImp = false
       if (parsed.highImp === undefined) parsed.highImp = false
       if (!parsed.currency) parsed.currency = 'USD'

@@ -27,7 +27,10 @@ export default function NewsPanel() {
   return (
     <div className="news-panel">
       <div className="news-top">
-        <button className="news-btn">News</button>
+        <button
+          className={`news-btn${state.newsActive ? ' active' : ''}`}
+          onClick={() => dispatch({ type: 'TOGGLE_NEWS' })}
+        >News</button>
         <div className="news-time-box">
           {editingTime ? (
             <input
