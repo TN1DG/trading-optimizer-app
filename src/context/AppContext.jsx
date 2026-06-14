@@ -56,10 +56,10 @@ export function reducer(state, action) {
       return { ...state, newsActive: !state.newsActive }
 
     case 'TOGGLE_LOW_IMP':
-      return { ...state, lowImp: !state.lowImp }
+      return { ...state, lowImp: !state.lowImp, highImp: false }
 
     case 'TOGGLE_HIGH_IMP':
-      return { ...state, highImp: !state.highImp }
+      return { ...state, highImp: !state.highImp, lowImp: false }
 
     case 'SET_CURRENCY':
       return { ...state, currency: action.payload }

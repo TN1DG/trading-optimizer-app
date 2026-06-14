@@ -8,8 +8,8 @@ body{background:#1a1a1a}
 .subtitle{cursor:text}
 .subtitle-input{background:transparent;border:none;border-bottom:1px solid #f5c518;outline:none;font-size:16px;color:#f5c518;text-align:center;margin-top:4px;padding:0 4px;font-family:inherit;width:260px;text-transform:uppercase;letter-spacing:0.08em;text-shadow:0 0 12px rgba(245,197,24,0.5)}
 .columns{display:grid;grid-template-columns:1fr 1fr;gap:1rem;flex:1;min-height:0}
-.col{background:#252528;border-radius:12px;padding:1rem;display:flex;flex-direction:column;overflow:hidden}
-.checklist-body,#rules-list{flex:1;overflow-y:auto;min-height:0;padding-right:2px}
+.col{background:#252528;border-radius:12px;padding:1rem;display:flex;flex-direction:column;overflow:hidden;min-height:0}
+.checklist-body,#rules-list{flex:1;overflow-y:auto;min-height:0;padding-right:2px;height:0}
 .checklist-body::-webkit-scrollbar,#rules-list::-webkit-scrollbar{width:4px}
 .checklist-body::-webkit-scrollbar-track,#rules-list::-webkit-scrollbar-track{background:transparent}
 .checklist-body::-webkit-scrollbar-thumb,#rules-list::-webkit-scrollbar-thumb{background:#3a3a3e;border-radius:4px}
