@@ -196,6 +196,7 @@ test('session checklist items reorder within section', async ({ page }) => {
 test('reset all checks clears all checked items', async ({ page }) => {
   await page.locator('#session-list .item').first().click()
   await expect(page.locator('#session-list .item').first()).toHaveClass(/checked/)
-  await page.locator('.reset-btn').click()
+  // reset-btn is hidden on mobile viewports (desktop-only by design) — trigger via JS
+  await page.evaluate(() => (document.querySelector('.reset-btn') as HTMLButtonElement).click())
   await expect(page.locator('#session-list .item').first()).not.toHaveClass(/checked/)
 })

@@ -2,11 +2,14 @@
 html,body{height:100%;overflow:hidden}
 body{background:#1a1a1a}
 .app{background:#1c1c1e;height:100vh;padding:1.5rem;padding-bottom:calc(1.5rem + 58px);font-family:'Coolvetica Rg',sans-serif;display:flex;flex-direction:column;overflow:hidden}
-.header{text-align:center;margin-bottom:1.5rem;flex-shrink:0}
+.header-row{display:flex;justify-content:center;align-items:center;position:relative;margin-bottom:1.5rem;flex-shrink:0}
+.header-controls{position:absolute;left:0;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:8px}
+.header{text-align:center}
 .header h1{font-size:22px;font-weight:500;color:#f5f5f5;letter-spacing:0.04em}
-.header p{font-size:16px;color:#f5c518;margin-top:4px;text-transform:uppercase;letter-spacing:0.08em;text-shadow:0 0 12px rgba(245,197,24,0.5)}
+.subtitle-container{display:inline-flex;justify-content:center;align-items:center;background:rgba(245,197,24,0.04);border:0.5px solid rgba(245,197,24,0.15);border-radius:8px;padding:4px 20px;margin-top:6px}
+.header p{font-size:16px;color:#f5c518;text-transform:uppercase;letter-spacing:0.08em;text-shadow:0 0 6px rgba(245,197,24,0.25)}
 .subtitle{cursor:text}
-.subtitle-input{background:transparent;border:none;border-bottom:1px solid #f5c518;outline:none;font-size:16px;color:#f5c518;text-align:center;margin-top:4px;padding:0 4px;font-family:inherit;width:260px;text-transform:uppercase;letter-spacing:0.08em;text-shadow:0 0 12px rgba(245,197,24,0.5)}
+.subtitle-input{background:transparent;border:none;border-bottom:1px solid #f5c518;outline:none;font-size:16px;color:#f5c518;text-align:center;padding:0 4px;font-family:inherit;width:220px;text-transform:uppercase;letter-spacing:0.08em;text-shadow:0 0 6px rgba(245,197,24,0.25)}
 .columns{display:grid;grid-template-columns:1fr 1fr;gap:1rem;flex:1;min-height:0}
 .col{background:#252528;border-radius:12px;padding:1rem;display:flex;flex-direction:column;overflow:hidden;min-height:0}
 .checklist-body,#rules-list{flex:1;overflow-y:auto;min-height:0;padding-right:2px;height:0}
@@ -112,7 +115,6 @@ body{background:#1a1a1a}
 .imp-btn.low.active,.imp-btn.high.active{background:#3d0d0d;border-color:#ef4444;color:#fca5a5;box-shadow:0 0 12px rgba(220,38,38,0.7),0 0 4px rgba(220,38,38,0.4)}
 .checklist-section .market-bar{padding:4px;gap:4px;margin-bottom:0;border-radius:7px;background:none;border:none}
 .checklist-section .market-btn{flex:none;padding:4px 10px;font-size:11px;border-radius:6px;letter-spacing:0.04em}
-.bottom-bar{display:flex;align-items:center;justify-content:center;margin-top:1.2rem;gap:12px;flex-shrink:0}
 .reset-btn{background:none;border:0.5px solid #444;border-radius:8px;padding:6px 18px;font-size:12px;color:#666;cursor:pointer;flex-shrink:0}
 .reset-btn:hover{border-color:#666;color:#999}
 .history-btns{display:flex;gap:4px}
@@ -135,6 +137,7 @@ body{background:#1a1a1a}
   .timer-btn{padding:6px 12px}
   .header h1{font-size:18px}
   .header p{font-size:13px}
+  .header-controls{gap:6px}
   .columns{gap:0.75rem}
   .session-top{flex-wrap:wrap}
   .ms-panel{flex-direction:column}
@@ -156,10 +159,11 @@ body{background:#1a1a1a}
 @media (max-width:640px){
   html,body{overflow:auto;height:auto}
   .app{height:auto;min-height:100svh;overflow:visible;padding:0.75rem;padding-bottom:calc(0.75rem + 96px)}
-  .header{margin-bottom:0.75rem}
+  .header-row{margin-bottom:0.75rem}
+  .header-controls{display:none}
   .header h1{font-size:18px}
   .header p{font-size:12px}
-  .subtitle-input{width:200px;font-size:12px}
+  .subtitle-input{width:180px;font-size:12px}
   .columns{grid-template-columns:1fr;flex:none;min-height:auto;gap:0.75rem}
   .col{overflow:visible;padding:0.75rem;min-height:0}
   /* reset height:0 so lists expand naturally on mobile */
@@ -187,7 +191,6 @@ body{background:#1a1a1a}
   .market-btn{padding:8px 0;font-size:11px}
   .section-title{font-size:12px}
   .col-title{font-size:11px;margin-bottom:0.6rem}
-  .bottom-bar{margin-bottom:0.75rem;gap:8px}
   /* timer */
   #timer-bar{padding:6px 0.75rem;flex-wrap:wrap;row-gap:6px;column-gap:8px}
   .timer-label{font-size:10px;flex:1}
@@ -225,7 +228,7 @@ body{background:#1a1a1a}
 .timer-set input::-webkit-inner-spin-button,.timer-set input::-webkit-outer-spin-button{-webkit-appearance:none}
 .timer-set input:focus{border-color:#f97316}
 .timer-set span{color:#555;font-size:16px;font-weight:300}
-.timer-main{display:flex;align-items:center;gap:10px;margin-left:auto}
+.timer-main{display:flex;align-items:center;gap:10px}
 .timer-btns{display:flex;gap:8px}
 .timer-btn{background:#2c2c30;border:0.5px solid #444;border-radius:8px;padding:7px 16px;font-size:12px;font-weight:500;color:#bbb;cursor:pointer;transition:background 0.15s,color 0.15s;flex-shrink:0}
 .timer-btn:hover{background:#3a3a3e;color:#fff}

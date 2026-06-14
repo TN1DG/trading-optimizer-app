@@ -115,19 +115,21 @@ export default function App() {
   return (
     <AppContext.Provider value={{ state, dispatch, canUndo, canRedo }}>
       <div className="app">
-        <Header />
+        <div className="header-row">
+          <div className="header-controls">
+            <button className="reset-btn" onClick={() => dispatch({ type: 'RESET_ALL' })}>
+              Reset all checks
+            </button>
+            <div className="history-btns">
+              <button className="history-btn" onClick={() => dispatch({ type: 'UNDO' })} disabled={!canUndo} title="Undo (Ctrl+Z)">↩</button>
+              <button className="history-btn" onClick={() => dispatch({ type: 'REDO' })} disabled={!canRedo} title="Redo (Ctrl+Y)">↪</button>
+            </div>
+          </div>
+          <Header />
+        </div>
         <div className="columns">
           <ChecklistColumn />
           <RulesColumn />
-        </div>
-        <div className="bottom-bar">
-          <button className="reset-btn" onClick={() => dispatch({ type: 'RESET_ALL' })}>
-            Reset all checks
-          </button>
-          <div className="history-btns">
-            <button className="history-btn" onClick={() => dispatch({ type: 'UNDO' })} disabled={!canUndo} title="Undo (Ctrl+Z)">↩</button>
-            <button className="history-btn" onClick={() => dispatch({ type: 'REDO' })} disabled={!canRedo} title="Redo (Ctrl+Y)">↪</button>
-          </div>
         </div>
       </div>
       <Timer />

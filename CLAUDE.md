@@ -4,47 +4,80 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Running the app
 
-Open `index.html` directly in a browser — no build step, no server, no dependencies. On Windows:
+This is a React + Vite app. Start the dev server:
 
 ```powershell
-Start-Process "index.html"
+npm run dev
 ```
 
-Deployed on Vercel — `index.html` is the entry point served at `/`.
+Then open **http://localhost:5173** (or the next available port) in a browser.
+
+Deployed on Vercel — `index.html` is the Vite entry point served at `/`.
 
 ## Architecture
 
-Single self-contained HTML file with inline `<style>`, markup, and `<script>`. No framework, no bundler, no external dependencies (icons use Tabler Icons classes but are not critical to functionality).
+React + Vite app. Source lives in `src/`:
+
+```
+src/
+  main.jsx              # mounts <App />
+  App.jsx               # root layout, AppContext provider, localStorage persistence
+  index.css             # global styles
+  context/
+    AppContext.jsx       # DEFAULT state, reducer, AppContext, useApp hook
+  components/
+    Header.jsx
+    MarketBar.jsx
+    ChecklistColumn.jsx
+    ChecklistItem.jsx
+    OptionsEditor.jsx
+    RulesColumn.jsx
+    RuleItem.jsx
+    SidePanel.jsx
+    NewsPanel.jsx
+    Timer.jsx
+```
 
 ### State model
 
-All data lives in a single `state` object persisted to `localStorage` under the key `fxboyz`. Shape:
+All state lives in a single object managed by `useReducer` in `App.jsx` and persisted to `localStorage` under the key `fxboyz`. Shape:
 
 ```js
 {
-  checklist: [{ id, text, checked, options[], selectedOption }],
-  rules:     [{ id, text, checked }]
+  marketCondition: '',
+  marketBias: '',
+  subtitle: '',
+  newsTime: '--:--',
+  newsActive: false,
+  lowImp: false,
+  highImp: false,
+  currency: 'USD',
+  profitTarget: '',
+  profitTargetB: '',
+  maxLossGBP: '',
+  maxLossUSD: '',
+  tradeQuotaA: '',
+  tradeQuotaB: '',
+  sessionChecklist: [{ id, text, checked, options[], selectedOptions[] }],
+  tradeChecklist:   [{ id, text, checked, options[], selectedOptions[] }],
+  rules:            [{ id, text, checked }],
 }
 ```
 
-`DEFAULT` defines the initial data and is deep-cloned on first load. IDs are generated as `max(existing ids) + 1`. Checklist IDs start from 1; rules IDs start from 101 to keep them distinct.
+`DEFAULT` in `AppContext.jsx` defines the initial data. IDs are generated as `max(existing ids) + 1`. Checklist IDs start from 1; rules IDs start from 101 to keep them distinct.
 
-### Render pattern
+### State management pattern
 
-Every mutation calls `save()` then `render()`. `render()` wipes both list containers and rebuilds the DOM from scratch — there is no diffing or partial update. `openEditors` is an in-memory `Set` of item IDs (not persisted) that tracks which checklist items have their dropdown options editor expanded.
+All mutations go through `dispatch(action)` — the reducer in `AppContext.jsx` handles every action type. State is consumed via the `useApp()` hook (which reads from `AppContext`). After every dispatch, `App.jsx` persists the new state to `localStorage`.
 
 ### Checklist vs Rules asymmetry
 
-Checklist items have two extra features rules do not:
-- **`options[]` / `selectedOption`** — a per-item dropdown the user can populate with choices
-- **Options editor** — toggled by the ☰ button (`.opts-btn`), renders an inline `.opts-editor` panel below the item for adding, editing, and deleting dropdown options
+Checklist items (`sessionChecklist`, `tradeChecklist`) have extra features rules do not:
+- **`options[]` / `selectedOptions[]`** — per-item multi-select options the user can populate
+- **Options editor** — rendered by `OptionsEditor.jsx`, toggled per item
 
-When adding new fields or interactive controls, check whether the feature applies to both columns or checklist only, and follow the existing `col === 'checklist'` guard pattern.
+When adding features, check whether they apply to both checklists and rules, or checklist only.
 
-### Event propagation
+### Impact buttons
 
-Item rows have a click listener for `toggleItem`. All buttons inside an item (`del-btn`, `opts-btn`, `item-select`) call `event.stopPropagation()` to prevent accidentally toggling the checked state. Maintain this pattern for any new controls added inside `.item`.
-
-### escHtml
-
-All user-supplied strings written into `innerHTML` must go through `escHtml()`. This applies to item text, option labels, and option values in select elements.
+`lowImp` and `highImp` are mutually exclusive — toggling one sets the other to `false` (handled in the reducer via `TOGGLE_LOW_IMP` / `TOGGLE_HIGH_IMP`).

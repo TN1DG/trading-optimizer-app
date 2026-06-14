@@ -27,19 +27,21 @@ export default function Header() {
   return (
     <div className="header">
       <h1>FX BOYZ TOOL</h1>
-      {editing ? (
-        <input
-          ref={inputRef}
-          className="subtitle-input"
-          value={val}
-          onChange={e => setVal(e.target.value)}
-          onBlur={commit}
-          onKeyDown={handleKeyDown}
-          autoFocus
-        />
-      ) : (
-        <p className="subtitle" onDoubleClick={startEdit}>{state.subtitle}</p>
-      )}
+      <div className="subtitle-container">
+        {editing ? (
+          <input
+            ref={inputRef}
+            className="subtitle-input"
+            value={val}
+            onChange={e => setVal(e.target.value)}
+            onBlur={commit}
+            onKeyDown={handleKeyDown}
+            autoFocus
+          />
+        ) : (
+          <p className="subtitle" onDoubleClick={startEdit}>{state.subtitle}</p>
+        )}
+      </div>
     </div>
   )
 }
