@@ -29,6 +29,9 @@ body{background:#1a1a1a}
 .chip.selected{background:#1f1200;border-color:#f97316;color:#f97316}
 .item.dragging{opacity:0.4}
 .item.drag-over{border-color:#f97316;background:#2a2420}
+.section-list{min-height:40px;border-radius:8px;transition:background 0.15s,border-color 0.15s}
+.section-list.drag-over{background:rgba(249,115,22,0.08);outline:1px dashed #f97316}
+.drop-placeholder{text-align:center;padding:16px 0;color:#555;font-size:13px;pointer-events:none}
 .drag-handle{color:#555;cursor:grab;font-size:16px;flex-shrink:0}
 .drag-handle:active{cursor:grabbing}
 .item-num{font-size:12px;color:#666;min-width:18px;flex-shrink:0}

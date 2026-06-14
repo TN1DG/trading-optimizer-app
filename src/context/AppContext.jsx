@@ -109,13 +109,39 @@ export function reducer(state, action) {
       }
 
     case 'REORDER_ITEMS': {
-      const arr = [...state[action.col]]
-      const from = arr.findIndex(x => x.id === action.fromId)
-      const to = arr.findIndex(x => x.id === action.toId)
-      if (from === -1 || to === -1 || from === to) return state
-      const [moved] = arr.splice(from, 1)
-      arr.splice(to, 0, moved)
-      return { ...state, [action.col]: arr }
+      const srcCol = state.sessionChecklist.some(x => x.id === action.fromId)
+        ? 'sessionChecklist'
+        : state.tradeChecklist.some(x => x.id === action.fromId)
+          ? 'tradeChecklist'
+          : action.col
+      const destArr = [...state[action.col]]
+      const to = destArr.findIndex(x => x.id === action.toId)
+      if (to === -1) return state
+      if (srcCol === action.col) {
+        const from = destArr.findIndex(x => x.id === action.fromId)
+        if (from === -1 || from === to) return state
+        const [moved] = destArr.splice(from, 1)
+        destArr.splice(to, 0, moved)
+        return { ...state, [action.col]: destArr }
+      }
+      const srcArr = [...state[srcCol]]
+      const from = srcArr.findIndex(x => x.id === action.fromId)
+      if (from === -1) return state
+      const [moved] = srcArr.splice(from, 1)
+      destArr.splice(to, 0, moved)
+      return { ...state, [srcCol]: srcArr, [action.col]: destArr }
+    }
+
+    case 'MOVE_ITEM_TO_COL': {
+      const CL_COLS = ['sessionChecklist', 'tradeChecklist']
+      const srcCol = CL_COLS.find(c => state[c].some(x => x.id === action.fromId))
+      if (!srcCol) return state
+      const srcArr = [...state[srcCol]]
+      const from = srcArr.findIndex(x => x.id === action.fromId)
+      if (from === -1) return state
+      const [moved] = srcArr.splice(from, 1)
+      if (srcCol === action.toCol) return { ...state, [srcCol]: [...srcArr, moved] }
+      return { ...state, [srcCol]: srcArr, [action.toCol]: [...state[action.toCol], moved] }
     }
 
     case 'ADD_OPTION': {

@@ -2,7 +2,7 @@ import { useState, useRef } from 'react'
 import { useApp } from '../context/AppContext'
 import OptionsEditor from './OptionsEditor'
 
-let dragSrcId = null
+let dragSrc = null
 
 export default function ChecklistItem({ item, index, col }) {
   const { dispatch } = useApp()
@@ -40,19 +40,21 @@ export default function ChecklistItem({ item, index, col }) {
   }
 
   function handleDragStart(e) {
-    dragSrcId = item.id
+    dragSrc = { id: item.id, col }
     setIsDragging(true)
     e.dataTransfer.effectAllowed = 'move'
+    e.dataTransfer.setData('text/plain', JSON.stringify({ id: item.id, col }))
   }
 
   function handleDragEnd() {
-    dragSrcId = null
+    dragSrc = null
     setIsDragging(false)
     setIsDragOver(false)
   }
 
   function handleDragOver(e) {
     e.preventDefault()
+    e.stopPropagation()
     setIsDragOver(true)
   }
 
@@ -62,11 +64,12 @@ export default function ChecklistItem({ item, index, col }) {
 
   function handleDrop(e) {
     e.preventDefault()
+    e.stopPropagation()
     setIsDragOver(false)
-    if (dragSrcId !== null && dragSrcId !== item.id) {
-      dispatch({ type: 'REORDER_ITEMS', col, fromId: dragSrcId, toId: item.id })
+    if (dragSrc !== null && dragSrc.id !== item.id) {
+      dispatch({ type: 'REORDER_ITEMS', col, fromId: dragSrc.id, toId: item.id })
     }
-    dragSrcId = null
+    dragSrc = null
   }
 
   const wrapClass = [
