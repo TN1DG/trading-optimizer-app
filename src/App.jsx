@@ -64,13 +64,12 @@ function loadState() {
       if (parsed.maxLossUSD === undefined) parsed.maxLossUSD = ''
       if (parsed.tradeQuotaA === undefined) parsed.tradeQuotaA = ''
       if (parsed.tradeQuotaB === undefined) parsed.tradeQuotaB = ''
-      if (parsed.checklist && !parsed.sessionChecklist) {
-        const items = parsed.checklist.map(normalizeItem)
-        parsed.sessionChecklist = items.slice(0, 4)
-        parsed.tradeChecklist = items.slice(4)
+      // Session checklist is always reset to defaults on load — it's a per-session template
+      parsed.sessionChecklist = JSON.parse(JSON.stringify(DEFAULT.sessionChecklist))
+      if (parsed.checklist && !parsed.tradeChecklist) {
+        parsed.tradeChecklist = parsed.checklist.map(normalizeItem).slice(4)
         delete parsed.checklist
       } else {
-        parsed.sessionChecklist = (parsed.sessionChecklist || []).map(normalizeItem)
         parsed.tradeChecklist = (parsed.tradeChecklist || []).map(normalizeItem)
       }
       return parsed

@@ -14,10 +14,13 @@ export const DEFAULT = {
   tradeQuotaA: '',
   tradeQuotaB: '',
   sessionChecklist: [
-    { id: 1, text: 'Ranging or trending (Bull/Bear)', checked: false, options: [], selectedOptions: [] },
-    { id: 2, text: 'Mark the following', checked: false, options: [], selectedOptions: [] },
-    { id: 3, text: 'Break out', checked: false, options: [], selectedOptions: [] },
-    { id: 4, text: 'Daily H+L, Session H+L', checked: false, options: [], selectedOptions: [] },
+    {
+      id: 1,
+      text: 'MARK POIs',
+      checked: false,
+      options: ['Daily H+L', 'Session H+L', 'Support + Resistance', 'Order Blocks', 'Draws of Liquidity', 'Breaker Blocks'],
+      selectedOptions: [],
+    },
   ],
   tradeChecklist: [
     { id: 5, text: 'Order blocks & Breaker blocks', checked: false, options: [], selectedOptions: [] },
