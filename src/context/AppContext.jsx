@@ -3,11 +3,23 @@ import { createContext, useContext } from 'react'
 export const DEFAULT = {
   marketCondition: '',
   marketBias: '',
-  checklist: [
+  subtitle: 'Rules + Checklist',
+  newsTime: '--:--',
+  lowImp: false,
+  highImp: false,
+  currency: 'USD',
+  profitTarget: '',
+  maxLossGBP: '',
+  maxLossUSD: '',
+  tradeQuotaA: '',
+  tradeQuotaB: '',
+  sessionChecklist: [
     { id: 1, text: 'Ranging or trending (Bull/Bear)', checked: false, options: [], selectedOptions: [] },
     { id: 2, text: 'Mark the following', checked: false, options: [], selectedOptions: [] },
     { id: 3, text: 'Break out', checked: false, options: [], selectedOptions: [] },
     { id: 4, text: 'Daily H+L, Session H+L', checked: false, options: [], selectedOptions: [] },
+  ],
+  tradeChecklist: [
     { id: 5, text: 'Order blocks & Breaker blocks', checked: false, options: [], selectedOptions: [] },
     { id: 6, text: 'Support + Resistance', checked: false, options: [], selectedOptions: [] },
     { id: 7, text: 'Higher time frame block', checked: false, options: [], selectedOptions: [] },
@@ -29,6 +41,36 @@ function nextId(items) {
 
 export function reducer(state, action) {
   switch (action.type) {
+    case 'SET_SUBTITLE':
+      return { ...state, subtitle: action.payload }
+
+    case 'SET_NEWS_TIME':
+      return { ...state, newsTime: action.payload }
+
+    case 'TOGGLE_LOW_IMP':
+      return { ...state, lowImp: !state.lowImp }
+
+    case 'TOGGLE_HIGH_IMP':
+      return { ...state, highImp: !state.highImp }
+
+    case 'SET_CURRENCY':
+      return { ...state, currency: action.payload }
+
+    case 'SET_PROFIT_TARGET':
+      return { ...state, profitTarget: action.payload }
+
+    case 'SET_MAX_LOSS_GBP':
+      return { ...state, maxLossGBP: action.payload }
+
+    case 'SET_MAX_LOSS_USD':
+      return { ...state, maxLossUSD: action.payload }
+
+    case 'SET_TRADE_QUOTA_A':
+      return { ...state, tradeQuotaA: action.payload }
+
+    case 'SET_TRADE_QUOTA_B':
+      return { ...state, tradeQuotaB: action.payload }
+
     case 'SET_MARKET_CONDITION':
       return { ...state, marketCondition: state.marketCondition === action.payload ? '' : action.payload }
 
@@ -44,11 +86,13 @@ export function reducer(state, action) {
       }
 
     case 'ADD_ITEM': {
+      const isChecklist = action.col === 'sessionChecklist' || action.col === 'tradeChecklist'
+      const allChecklistItems = isChecklist ? [...state.sessionChecklist, ...state.tradeChecklist] : state[action.col]
       const newItem = {
-        id: nextId(state[action.col]),
+        id: nextId(allChecklistItems),
         text: action.text,
         checked: false,
-        ...(action.col === 'checklist' ? { options: [], selectedOptions: [] } : {}),
+        ...(isChecklist ? { options: [], selectedOptions: [] } : {}),
       }
       return { ...state, [action.col]: [...state[action.col], newItem] }
     }
@@ -74,66 +118,63 @@ export function reducer(state, action) {
       return { ...state, [action.col]: arr }
     }
 
-    case 'ADD_OPTION':
-      return {
-        ...state,
-        checklist: state.checklist.map(item =>
-          item.id === action.id ? { ...item, options: [...item.options, action.value] } : item
-        ),
-      }
+    case 'ADD_OPTION': {
+      const updateAdd = items => items.map(item =>
+        item.id === action.id ? { ...item, options: [...item.options, action.value] } : item
+      )
+      return { ...state, sessionChecklist: updateAdd(state.sessionChecklist), tradeChecklist: updateAdd(state.tradeChecklist) }
+    }
 
-    case 'DELETE_OPTION':
-      return {
-        ...state,
-        checklist: state.checklist.map(item => {
-          if (item.id !== action.id) return item
-          const removed = item.options[action.optIndex]
+    case 'DELETE_OPTION': {
+      const updateDel = items => items.map(item => {
+        if (item.id !== action.id) return item
+        const removed = item.options[action.optIndex]
+        return {
+          ...item,
+          options: item.options.filter((_, i) => i !== action.optIndex),
+          selectedOptions: item.selectedOptions.filter(o => o !== removed),
+        }
+      })
+      return { ...state, sessionChecklist: updateDel(state.sessionChecklist), tradeChecklist: updateDel(state.tradeChecklist) }
+    }
+
+    case 'EDIT_OPTION': {
+      const updateEdit = items => items.map(item => {
+        if (item.id !== action.id) return item
+        const old = item.options[action.optIndex]
+        const val = action.value.trim()
+        if (!val) {
           return {
             ...item,
             options: item.options.filter((_, i) => i !== action.optIndex),
-            selectedOptions: item.selectedOptions.filter(o => o !== removed),
+            selectedOptions: item.selectedOptions.filter(o => o !== old),
           }
-        }),
-      }
+        }
+        return {
+          ...item,
+          options: item.options.map((o, i) => (i === action.optIndex ? val : o)),
+          selectedOptions: item.selectedOptions.map(o => (o === old ? val : o)),
+        }
+      })
+      return { ...state, sessionChecklist: updateEdit(state.sessionChecklist), tradeChecklist: updateEdit(state.tradeChecklist) }
+    }
 
-    case 'EDIT_OPTION':
-      return {
-        ...state,
-        checklist: state.checklist.map(item => {
-          if (item.id !== action.id) return item
-          const old = item.options[action.optIndex]
-          const val = action.value.trim()
-          if (!val) {
-            return {
-              ...item,
-              options: item.options.filter((_, i) => i !== action.optIndex),
-              selectedOptions: item.selectedOptions.filter(o => o !== old),
-            }
-          }
-          return {
-            ...item,
-            options: item.options.map((o, i) => (i === action.optIndex ? val : o)),
-            selectedOptions: item.selectedOptions.map(o => (o === old ? val : o)),
-          }
-        }),
-      }
-
-    case 'TOGGLE_OPTION':
-      return {
-        ...state,
-        checklist: state.checklist.map(item => {
-          if (item.id !== action.id) return item
-          const sel = item.selectedOptions.includes(action.value)
-            ? item.selectedOptions.filter(o => o !== action.value)
-            : [...item.selectedOptions, action.value]
-          return { ...item, selectedOptions: sel }
-        }),
-      }
+    case 'TOGGLE_OPTION': {
+      const updateToggle = items => items.map(item => {
+        if (item.id !== action.id) return item
+        const sel = item.selectedOptions.includes(action.value)
+          ? item.selectedOptions.filter(o => o !== action.value)
+          : [...item.selectedOptions, action.value]
+        return { ...item, selectedOptions: sel }
+      })
+      return { ...state, sessionChecklist: updateToggle(state.sessionChecklist), tradeChecklist: updateToggle(state.tradeChecklist) }
+    }
 
     case 'RESET_ALL':
       return {
         ...state,
-        checklist: state.checklist.map(item => ({ ...item, checked: false })),
+        sessionChecklist: state.sessionChecklist.map(item => ({ ...item, checked: false })),
+        tradeChecklist: state.tradeChecklist.map(item => ({ ...item, checked: false })),
         rules: state.rules.map(item => ({ ...item, checked: false })),
       }
 
