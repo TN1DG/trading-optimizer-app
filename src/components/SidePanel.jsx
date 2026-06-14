@@ -12,6 +12,7 @@ export default function SidePanel() {
 
   return (
     <div className="side-panel">
+      <div className="side-panel-title">Aims</div>
       <div className="currency-toggle">
         {CURRENCIES.map(c => (
           <button
@@ -28,16 +29,28 @@ export default function SidePanel() {
         <tbody>
           <tr>
             <td className="side-table-label">Profit Target</td>
-            <td className="side-table-currency">{sym}</td>
-            <td className="side-table-input-cell">
-              <input
-                className="side-table-input"
-                type="number"
-                min="0"
-                placeholder="0.00"
-                value={state.profitTarget ?? ''}
-                onChange={e => dispatch({ type: 'SET_PROFIT_TARGET', payload: e.target.value })}
-              />
+            <td colSpan={2} className="side-table-input-cell">
+              <div className="max-loss-row">
+                <span className="max-loss-sym">{sym}</span>
+                <input
+                  className="side-table-input"
+                  type="number"
+                  min="0"
+                  placeholder="0.00"
+                  value={state.profitTarget ?? ''}
+                  onChange={e => dispatch({ type: 'SET_PROFIT_TARGET', payload: e.target.value })}
+                />
+                <span className="max-loss-sep">/</span>
+                <span className="max-loss-sym">{sym}</span>
+                <input
+                  className="side-table-input"
+                  type="number"
+                  min="0"
+                  placeholder="0.00"
+                  value={state.profitTargetB ?? ''}
+                  onChange={e => dispatch({ type: 'SET_PROFIT_TARGET_B', payload: e.target.value })}
+                />
+              </div>
             </td>
           </tr>
           <tr>

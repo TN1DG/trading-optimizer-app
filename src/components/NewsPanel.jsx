@@ -26,6 +26,7 @@ export default function NewsPanel() {
 
   return (
     <div className="news-panel">
+      <div className="ms-panel-title">Research</div>
       <div className="news-top">
         <button
           className={`news-btn${state.newsActive ? ' active' : ''}`}

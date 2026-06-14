@@ -61,6 +61,7 @@ function loadState() {
       if (parsed.highImp === undefined) parsed.highImp = false
       if (!parsed.currency) parsed.currency = 'USD'
       if (parsed.profitTarget === undefined) parsed.profitTarget = ''
+      if (parsed.profitTargetB === undefined) parsed.profitTargetB = ''
       if (parsed.maxLossGBP === undefined) parsed.maxLossGBP = ''
       if (parsed.maxLossUSD === undefined) parsed.maxLossUSD = ''
       if (parsed.tradeQuotaA === undefined) parsed.tradeQuotaA = ''

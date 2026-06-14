@@ -10,6 +10,7 @@ export const DEFAULT = {
   highImp: false,
   currency: 'USD',
   profitTarget: '',
+  profitTargetB: '',
   maxLossGBP: '',
   maxLossUSD: '',
   tradeQuotaA: '',
@@ -65,6 +66,9 @@ export function reducer(state, action) {
 
     case 'SET_PROFIT_TARGET':
       return { ...state, profitTarget: action.payload }
+
+    case 'SET_PROFIT_TARGET_B':
+      return { ...state, profitTargetB: action.payload }
 
     case 'SET_MAX_LOSS_GBP':
       return { ...state, maxLossGBP: action.payload }

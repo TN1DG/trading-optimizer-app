@@ -79,7 +79,8 @@ body{background:#1a1a1a}
 .market-btn.bull{background:#0f2a1a;border-color:#16a34a;color:#4ade80;box-shadow:0 0 12px rgba(74,222,128,0.15)}
 .market-btn.bear{background:#2a0f0f;border-color:#dc2626;color:#f87171;box-shadow:0 0 12px rgba(248,113,113,0.15)}
 .session-top{display:flex;gap:8px;margin-bottom:8px}
-.session-market-btns{display:flex;flex-direction:column;gap:4px;flex-shrink:0}
+.ms-panel{display:flex;flex-direction:column;gap:4px;flex-shrink:0;background:#2c2c30;border:0.5px solid #333;border-radius:10px;padding:8px 10px}
+.ms-panel-title,.side-panel-title{font-size:10px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:2px}
 .news-panel{flex:1;background:#2c2c30;border:0.5px solid #333;border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:8px}
 .side-panel{flex:1;background:#2c2c30;border:0.5px solid #333;border-radius:10px;padding:8px 10px}
 .side-table{width:100%;border-collapse:collapse}
@@ -134,7 +135,7 @@ body{background:#1a1a1a}
   .header p{font-size:13px}
   .columns{gap:0.75rem}
   .session-top{flex-wrap:wrap}
-  .session-market-btns{flex-direction:row;flex-wrap:wrap}
+  .ms-panel{flex-direction:row;flex-wrap:wrap}
   .side-panel,.news-panel{min-width:140px}
   #rules-list .item-text{font-size:15px}
   #rules-list .item-edit-input{font-size:15px}
@@ -161,7 +162,7 @@ body{background:#1a1a1a}
   .col{overflow:visible;padding:0.75rem}
   .checklist-body,#rules-list{flex:none;max-height:38vh;overflow-y:auto}
   .session-top{flex-direction:column;gap:6px}
-  .session-market-btns{flex-direction:row;flex-wrap:wrap;gap:4px}
+  .ms-panel{flex-direction:row;flex-wrap:wrap;gap:4px}
   .checklist-section .market-bar{flex-wrap:wrap}
   .side-panel,.news-panel{width:100%}
   .side-table-label{font-size:10px}

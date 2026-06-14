@@ -56,7 +56,8 @@ export default function ChecklistColumn() {
           <div className="section-title">Session Checklist</div>
           <div className="session-top">
             <SidePanel />
-            <div className="session-market-btns">
+            <div className="ms-panel">
+              <div className="ms-panel-title">Market Structure</div>
               <MarketBar
                 buttons={CONDITION_BUTTONS}
                 current={state.marketCondition}
