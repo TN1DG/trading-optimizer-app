@@ -28,19 +28,21 @@ export default function NewsPanel() {
     <div className="news-panel">
       <div className="news-top">
         <button className="news-btn">News</button>
-        {editingTime ? (
-          <input
-            ref={timeInputRef}
-            className="news-time-input"
-            type="time"
-            defaultValue={state.newsTime !== '--:--' ? state.newsTime : ''}
-            onChange={commitTime}
-            onBlur={() => setEditingTime(false)}
-            autoFocus
-          />
-        ) : (
-          <span className="news-time" onDoubleClick={startEditTime}>{to12h(state.newsTime)}</span>
-        )}
+        <div className="news-time-box">
+          {editingTime ? (
+            <input
+              ref={timeInputRef}
+              className="news-time-input"
+              type="time"
+              defaultValue={state.newsTime !== '--:--' ? state.newsTime : ''}
+              onChange={commitTime}
+              onBlur={() => setEditingTime(false)}
+              autoFocus
+            />
+          ) : (
+            <span className="news-time" onDoubleClick={startEditTime}>{to12h(state.newsTime)}</span>
+          )}
+        </div>
       </div>
       <div className="news-imp-btns">
         <button
