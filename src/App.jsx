@@ -54,6 +54,10 @@ function loadState() {
       const parsed = JSON.parse(s)
       if (!parsed.marketCondition) parsed.marketCondition = ''
       if (!parsed.marketBias) parsed.marketBias = ''
+      if (!parsed.tradeDirection) parsed.tradeDirection = ''
+      if (parsed.tradeBE === undefined) parsed.tradeBE = false
+      if (parsed.tradeRisk === undefined) parsed.tradeRisk = ''
+      if (parsed.tradeTP === undefined) parsed.tradeTP = ''
       if (!parsed.subtitle) parsed.subtitle = 'Rules + Checklist'
       if (!parsed.newsTime) parsed.newsTime = '--:--'
       if (parsed.newsActive === undefined) parsed.newsActive = false

@@ -3,6 +3,10 @@ import { createContext, useContext } from 'react'
 export const DEFAULT = {
   marketCondition: '',
   marketBias: '',
+  tradeDirection: '',
+  tradeBE: false,
+  tradeRisk: '',
+  tradeTP: '',
   subtitle: 'Rules + Checklist',
   newsTime: '--:--',
   newsActive: false,
@@ -87,6 +91,21 @@ export function reducer(state, action) {
 
     case 'SET_MARKET_BIAS':
       return { ...state, marketBias: state.marketBias === action.payload ? '' : action.payload }
+
+    case 'SET_TRADE_DIRECTION': {
+      const next = state.tradeDirection === action.payload ? '' : action.payload
+      // Clearing the trade (no direction) also clears the break-even flag
+      return { ...state, tradeDirection: next, tradeBE: next ? state.tradeBE : false }
+    }
+
+    case 'TOGGLE_TRADE_BE':
+      return { ...state, tradeBE: !state.tradeBE }
+
+    case 'SET_TRADE_RISK':
+      return { ...state, tradeRisk: action.payload }
+
+    case 'SET_TRADE_TP':
+      return { ...state, tradeTP: action.payload }
 
     case 'TOGGLE_ITEM':
       return {
@@ -210,6 +229,10 @@ export function reducer(state, action) {
     case 'RESET_ALL':
       return {
         ...state,
+        tradeDirection: '',
+        tradeBE: false,
+        tradeRisk: '',
+        tradeTP: '',
         sessionChecklist: state.sessionChecklist.map(item => ({ ...item, checked: false })),
         tradeChecklist: state.tradeChecklist.map(item => ({ ...item, checked: false })),
         rules: state.rules.map(item => ({ ...item, checked: false })),

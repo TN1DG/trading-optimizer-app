@@ -4,6 +4,8 @@ import MarketBar from './MarketBar'
 import ChecklistItem from './ChecklistItem'
 import NewsPanel from './NewsPanel'
 import SidePanel from './SidePanel'
+import CurrentTradePanel from './CurrentTradePanel'
+import CalculatorPanel from './CalculatorPanel'
 
 const CONDITION_BUTTONS = [
   { label: 'Ranging', value: 'ranging', activeClass: 'ranging' },
@@ -70,6 +72,8 @@ export default function ChecklistColumn() {
               />
             </div>
             <NewsPanel />
+            <CurrentTradePanel />
+            <CalculatorPanel />
           </div>
           <div
             id="session-list"
