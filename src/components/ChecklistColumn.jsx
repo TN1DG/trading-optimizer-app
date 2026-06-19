@@ -17,11 +17,16 @@ const BIAS_BUTTONS = [
   { label: 'Bearish', value: 'bear', activeClass: 'bear' },
 ]
 
+// Panels that should grow to fill spare space; others size to their content.
+const GROW_PANELS = new Set(['news', 'aims'])
+
 export default function ChecklistColumn() {
   const { state, dispatch } = useApp()
   const sessionInputRef = useRef(null)
   const tradeInputRef = useRef(null)
   const [dragOverCol, setDragOverCol] = useState(null)
+  const [dragPanel, setDragPanel] = useState(null)
+  const [dragOverPanel, setDragOverPanel] = useState(null)
 
   function handleAdd(col, inputRef) {
     const val = inputRef.current?.value.trim()
@@ -49,6 +54,83 @@ export default function ChecklistColumn() {
     } catch { /* ignore invalid data */ }
   }
 
+  // ── Panel reordering (drag the grip handle) ──────────────────────────────
+  function handlePanelGripStart(e, key) {
+    e.dataTransfer.effectAllowed = 'move'
+    e.dataTransfer.setData('text/plain', JSON.stringify({ panel: key }))
+    // Drag the whole panel block as the drag image, not just the grip
+    const block = e.currentTarget.parentElement
+    if (block) e.dataTransfer.setDragImage(block, 12, 12)
+    setDragPanel(key)
+  }
+
+  function handlePanelDragOver(e, key) {
+    e.preventDefault()
+    if (dragPanel && dragPanel !== key) setDragOverPanel(key)
+  }
+
+  function handlePanelDrop(e, toKey) {
+    e.preventDefault()
+    setDragOverPanel(null)
+    let fromKey = dragPanel
+    if (!fromKey) {
+      try { fromKey = JSON.parse(e.dataTransfer.getData('text/plain'))?.panel } catch { /* ignore */ }
+    }
+    setDragPanel(null)
+    if (fromKey && fromKey !== toKey) {
+      dispatch({ type: 'REORDER_PANELS', fromKey, toKey })
+    }
+  }
+
+  const PANELS = {
+    currentTrade: <CurrentTradePanel />,
+    marketStructure: (
+      <div className="ms-panel">
+        <div className="ms-panel-title">Market Structure</div>
+        <MarketBar
+          buttons={CONDITION_BUTTONS}
+          current={state.marketCondition}
+          onSelect={val => dispatch({ type: 'SET_MARKET_CONDITION', payload: val })}
+        />
+        <MarketBar
+          buttons={BIAS_BUTTONS}
+          current={state.marketBias}
+          onSelect={val => dispatch({ type: 'SET_MARKET_BIAS', payload: val })}
+        />
+      </div>
+    ),
+    news: <NewsPanel />,
+    aims: <SidePanel />,
+    calculator: <CalculatorPanel />,
+  }
+
+  function renderPanel(key) {
+    if (!PANELS[key]) return null
+    return (
+      <div
+        key={key}
+        data-panel={key}
+        className={
+          'panel-block' +
+          (GROW_PANELS.has(key) ? ' pb-grow' : '') +
+          (dragOverPanel === key ? ' panel-drag-over' : '')
+        }
+        onDragOver={e => handlePanelDragOver(e, key)}
+        onDragLeave={e => { if (!e.currentTarget.contains(e.relatedTarget)) setDragOverPanel(p => (p === key ? null : p)) }}
+        onDrop={e => handlePanelDrop(e, key)}
+      >
+        <span
+          className="panel-grip"
+          title="Drag to reorder"
+          draggable
+          onDragStart={e => handlePanelGripStart(e, key)}
+          onDragEnd={() => { setDragPanel(null); setDragOverPanel(null) }}
+        >⠿</span>
+        {PANELS[key]}
+      </div>
+    )
+  }
+
   return (
     <div className="col">
       <div className="col-title">Checklist</div>
@@ -57,23 +139,7 @@ export default function ChecklistColumn() {
         <div className="checklist-section">
           <div className="section-title">Session Checklist</div>
           <div className="session-top">
-            <CurrentTradePanel />
-            <div className="ms-panel">
-              <div className="ms-panel-title">Market Structure</div>
-              <MarketBar
-                buttons={CONDITION_BUTTONS}
-                current={state.marketCondition}
-                onSelect={val => dispatch({ type: 'SET_MARKET_CONDITION', payload: val })}
-              />
-              <MarketBar
-                buttons={BIAS_BUTTONS}
-                current={state.marketBias}
-                onSelect={val => dispatch({ type: 'SET_MARKET_BIAS', payload: val })}
-              />
-            </div>
-            <NewsPanel />
-            <SidePanel />
-            <CalculatorPanel />
+            {state.panelOrder.map(renderPanel)}
           </div>
           <div
             id="session-list"
