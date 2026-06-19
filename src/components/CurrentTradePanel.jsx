@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useApp } from '../context/AppContext'
 
 function fmt(total) {
@@ -16,13 +16,11 @@ export default function CurrentTradePanel() {
 
   const [elapsed, setElapsed] = useState(0)
   const [running, setRunning] = useState(false)
-  const intervalRef = useRef(null)
 
   useEffect(() => {
-    if (running) {
-      intervalRef.current = setInterval(() => setElapsed(e => e + 1), 1000)
-    }
-    return () => clearInterval(intervalRef.current)
+    if (!running) return
+    const id = setInterval(() => setElapsed(e => e + 1), 1000)
+    return () => clearInterval(id)
   }, [running])
 
   function resetStopwatch() {

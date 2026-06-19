@@ -170,7 +170,10 @@ test('aims inputs persist across reload', async ({ page }) => {
 
 // ── Drag within session checklist ──────────────────────────────────────────
 
-test('session checklist items reorder within section', async ({ page }) => {
+test('session checklist items reorder within section', async ({ page, isMobile }) => {
+  // Native HTML5 drag-and-drop can't be driven by mouse simulation under touch
+  // emulation, and reorder isn't a touch gesture — desktop only.
+  test.skip(isMobile, 'native HTML5 DnD not supported under touch emulation')
   // add a second item so we have two to reorder
   await page.locator('input[placeholder="Add session item..."]').fill('Second item')
   await page.locator('input[placeholder="Add session item..."]').press('Enter')
@@ -189,6 +192,70 @@ test('session checklist items reorder within section', async ({ page }) => {
 
   const texts = await page.locator('#session-list .item-text').allTextContents()
   expect(texts[0]).toBe('Second item')
+})
+
+// ── Current Trade panel ────────────────────────────────────────────────────
+
+test('Current Trade Buy and Sell are mutually exclusive', async ({ page }) => {
+  const buy = page.locator('.trade-btn.buy')
+  const sell = page.locator('.trade-btn.sell')
+  await buy.click()
+  await expect(buy).toHaveClass(/active/)
+  await sell.click()
+  await expect(sell).toHaveClass(/active/)
+  await expect(buy).not.toHaveClass(/active/)
+})
+
+test('Break Even flickers while a trade is open, then activates solid', async ({ page }) => {
+  const be = page.locator('.trade-btn.be')
+  await expect(be).not.toHaveClass(/flicker/)
+  await page.locator('.trade-btn.buy').click()
+  await expect(be).toHaveClass(/flicker/)
+  await be.click()
+  await expect(be).toHaveClass(/active/)
+  await expect(be).not.toHaveClass(/flicker/)
+})
+
+test('clearing trade direction resets Break Even', async ({ page }) => {
+  await page.locator('.trade-btn.buy').click()
+  await page.locator('.trade-btn.be').click()
+  await expect(page.locator('.trade-btn.be')).toHaveClass(/active/)
+  await page.locator('.trade-btn.buy').click() // toggle direction off
+  await expect(page.locator('.trade-btn.be')).not.toHaveClass(/active/)
+})
+
+// ── Calculator panel ───────────────────────────────────────────────────────
+
+test('calculator performs basic arithmetic', async ({ page }) => {
+  await page.locator('.calc-key').filter({ hasText: /^6$/ }).click()
+  await page.locator('.calc-key.op').filter({ hasText: '+' }).click()
+  await page.locator('.calc-key').filter({ hasText: /^7$/ }).click()
+  await page.locator('.calc-key.eq').click()
+  await expect(page.locator('.calc-display')).toHaveText('13')
+})
+
+test('calculator clear resets the display', async ({ page }) => {
+  await page.locator('.calc-key').filter({ hasText: /^5$/ }).click()
+  await expect(page.locator('.calc-display')).toHaveText('5')
+  await page.locator('.calc-key.clear').click()
+  await expect(page.locator('.calc-display')).toHaveText('0')
+})
+
+// ── Research: Stocks chart link ────────────────────────────────────────────
+
+test('Stocks chart link points to Forex Factory in a new tab', async ({ page }) => {
+  const link = page.locator('.stocks-btn')
+  await expect(link).toHaveAttribute('href', 'https://www.forexfactory.com/')
+  await expect(link).toHaveAttribute('target', '_blank')
+})
+
+// ── Aims: Risk Per Trade ───────────────────────────────────────────────────
+
+test('Risk Per Trade input persists across reload', async ({ page }) => {
+  const cell = page.locator('tr', { hasText: 'Risk Per Trade' }).locator('input')
+  await cell.fill('250')
+  await page.reload()
+  await expect(page.locator('tr', { hasText: 'Risk Per Trade' }).locator('input')).toHaveValue('250')
 })
 
 // ── Reset all checks ───────────────────────────────────────────────────────

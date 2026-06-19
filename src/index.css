@@ -82,10 +82,12 @@ body{background:#1a1a1a}
 .market-btn.bull{background:#0f2a1a;border-color:#16a34a;color:#4ade80;box-shadow:0 0 12px rgba(74,222,128,0.15)}
 .market-btn.bear{background:#2a0f0f;border-color:#dc2626;color:#f87171;box-shadow:0 0 12px rgba(248,113,113,0.15)}
 .session-top{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
-.ms-panel{display:flex;flex-direction:column;gap:4px;flex-shrink:0;background:#2c2c30;border:0.5px solid #333;border-radius:10px;padding:8px 10px}
+/* shared panel chrome */
+.side-panel,.news-panel,.ms-panel,.current-trade-panel,.calc-panel{background:#2c2c30;border:0.5px solid #333;border-radius:10px;padding:8px 10px}
+.ms-panel{display:flex;flex-direction:column;gap:4px;flex-shrink:0}
 .ms-panel-title,.side-panel-title{font-size:11px;font-weight:800;color:#bbb;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:2px}
-.news-panel{flex:1;background:#2c2c30;border:0.5px solid #333;border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:8px}
-.side-panel{flex:1;background:#2c2c30;border:0.5px solid #333;border-radius:10px;padding:8px 10px}
+.news-panel{flex:1;display:flex;flex-direction:column;gap:8px}
+.side-panel{flex:1}
 .side-table{width:100%;border-collapse:collapse}
 .side-table td{padding:5px 4px;vertical-align:middle}
 .side-table-label{font-size:11px;font-weight:600;color:#aaa;text-transform:uppercase;letter-spacing:0.06em;white-space:nowrap}
@@ -115,7 +117,7 @@ body{background:#1a1a1a}
 .imp-btn{flex:none;padding:4px 10px;border-radius:6px;border:0.5px solid #3a3a3e;background:#252528;font-size:11px;font-weight:600;cursor:pointer;letter-spacing:0.04em;text-transform:uppercase;color:#666;transition:all 0.2s;font-family:inherit}
 .imp-btn:hover{border-color:#666;color:#aaa}
 .imp-btn.low.active,.imp-btn.high.active{background:#3d0d0d;border-color:#ef4444;color:#fca5a5;box-shadow:0 0 12px rgba(220,38,38,0.7),0 0 4px rgba(220,38,38,0.4)}
-.current-trade-panel{display:flex;flex-direction:column;gap:4px;flex-shrink:0;background:#2c2c30;border:0.5px solid #333;border-radius:10px;padding:8px 10px}
+.current-trade-panel{display:flex;flex-direction:column;gap:4px;flex-shrink:0}
 .trade-btns{display:flex;gap:6px}
 .trade-btn{flex:none;padding:4px 12px;border-radius:6px;border:0.5px solid #3a3a3e;background:#252528;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:0.04em;text-transform:uppercase;color:#666;transition:all 0.2s;font-family:inherit}
 .trade-btn:hover{border-color:#666;color:#aaa}
@@ -132,7 +134,7 @@ body{background:#1a1a1a}
 .sw-display{font-size:15px;font-weight:700;color:#f5f5f5;font-variant-numeric:tabular-nums;letter-spacing:0.04em;min-width:48px}
 .sw-btn{background:#252528;border:0.5px solid #3a3a3e;border-radius:6px;padding:3px 10px;font-size:11px;font-weight:600;color:#aaa;cursor:pointer;letter-spacing:0.04em;text-transform:uppercase;font-family:inherit;transition:all 0.15s}
 .sw-btn:hover{border-color:#666;color:#ddd}
-.calc-panel{display:flex;flex-direction:column;gap:6px;flex-shrink:0;background:#2c2c30;border:0.5px solid #333;border-radius:10px;padding:8px 10px;width:148px}
+.calc-panel{display:flex;flex-direction:column;gap:6px;flex-shrink:0;width:148px}
 .calc-display{background:#1e1e22;border:0.5px solid #3a3a3e;border-radius:6px;padding:6px 8px;font-size:16px;font-weight:700;color:#f5f5f5;text-align:right;font-variant-numeric:tabular-nums;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .calc-keys{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
 .calc-key{background:#252528;border:0.5px solid #3a3a3e;border-radius:6px;padding:6px 0;font-size:13px;font-weight:600;color:#ddd;cursor:pointer;font-family:inherit;transition:all 0.12s}
