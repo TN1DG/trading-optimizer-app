@@ -17,6 +17,7 @@ export const DEFAULT = {
   profitTargetB: '',
   maxLossGBP: '',
   maxLossUSD: '',
+  riskPerTrade: '',
   tradeQuotaA: '',
   tradeQuotaB: '',
   sessionChecklist: [
@@ -79,6 +80,9 @@ export function reducer(state, action) {
 
     case 'SET_MAX_LOSS_USD':
       return { ...state, maxLossUSD: action.payload }
+
+    case 'SET_RISK_PER_TRADE':
+      return { ...state, riskPerTrade: action.payload }
 
     case 'SET_TRADE_QUOTA_A':
       return { ...state, tradeQuotaA: action.payload }

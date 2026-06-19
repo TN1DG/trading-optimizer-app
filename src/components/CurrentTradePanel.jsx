@@ -41,7 +41,7 @@ export default function CurrentTradePanel() {
         <button
           className={`trade-btn be${beClass}`}
           onClick={() => dispatch({ type: 'TOGGLE_TRADE_BE' })}
-        >BE</button>
+        >Break Even</button>
         <button
           className={`trade-btn sell${state.tradeDirection === 'sell' ? ' active' : ''}`}
           onClick={() => dispatch({ type: 'SET_TRADE_DIRECTION', payload: 'sell' })}

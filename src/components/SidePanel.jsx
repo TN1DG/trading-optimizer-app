@@ -80,6 +80,22 @@ export default function SidePanel() {
             </td>
           </tr>
           <tr>
+            <td className="side-table-label">Risk Per Trade</td>
+            <td colSpan={2} className="side-table-input-cell">
+              <div className="max-loss-row">
+                <span className="max-loss-sym">{sym}</span>
+                <input
+                  className="side-table-input"
+                  type="number"
+                  min="0"
+                  placeholder="0.00"
+                  value={state.riskPerTrade ?? ''}
+                  onChange={e => dispatch({ type: 'SET_RISK_PER_TRADE', payload: e.target.value })}
+                />
+              </div>
+            </td>
+          </tr>
+          <tr>
             <td className="side-table-label">Trade Quota</td>
             <td colSpan={2} className="side-table-input-cell">
               <div className="max-loss-row">

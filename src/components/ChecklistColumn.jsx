@@ -57,7 +57,7 @@ export default function ChecklistColumn() {
         <div className="checklist-section">
           <div className="section-title">Session Checklist</div>
           <div className="session-top">
-            <SidePanel />
+            <CurrentTradePanel />
             <div className="ms-panel">
               <div className="ms-panel-title">Market Structure</div>
               <MarketBar
@@ -72,7 +72,7 @@ export default function ChecklistColumn() {
               />
             </div>
             <NewsPanel />
-            <CurrentTradePanel />
+            <SidePanel />
             <CalculatorPanel />
           </div>
           <div

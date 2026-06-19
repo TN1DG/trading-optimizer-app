@@ -32,6 +32,23 @@ export default function NewsPanel() {
           className={`news-btn${state.newsActive ? ' active' : ''}`}
           onClick={() => dispatch({ type: 'TOGGLE_NEWS' })}
         >News</button>
+        <a
+          className="stocks-btn"
+          href="https://www.forexfactory.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Forex Factory news"
+          aria-label="Forex Factory news"
+        >
+          <svg width="20" height="16" viewBox="0 0 24 18" fill="none" aria-hidden="true">
+            {/* up candle */}
+            <line x1="7" y1="2" x2="7" y2="16" stroke="#4ade80" strokeWidth="1.5" />
+            <rect x="4.5" y="5" width="5" height="7" fill="#4ade80" />
+            {/* down candle */}
+            <line x1="17" y1="3" x2="17" y2="17" stroke="#f87171" strokeWidth="1.5" />
+            <rect x="14.5" y="8" width="5" height="6" fill="#f87171" />
+          </svg>
+        </a>
         <div className="news-time-box">
           {editingTime ? (
             <input
