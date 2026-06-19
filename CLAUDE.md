@@ -40,7 +40,7 @@ src/
 
 ### State model
 
-All state lives in a single object managed by `useReducer` in `App.jsx` and persisted to `localStorage` under the key `fxboyz`. Shape:
+Each **page** owns one state object (the per-page "board"). The reducer in `AppContext.jsx` operates on a single page's state; its shape:
 
 ```js
 {
@@ -58,6 +58,8 @@ All state lives in a single object managed by `useReducer` in `App.jsx` and pers
   maxLossUSD: '',
   tradeQuotaA: '',
   tradeQuotaB: '',
+  panelOrder: ['currentTrade','marketStructure','news','aims','calculator'], // session-top panel order (drag to reorder)
+  presets: [{ id, name, snapshot }],   // per-page saved views; snapshot = full page state minus `presets`
   sessionChecklist: [{ id, text, checked, options[], selectedOptions[] }],
   tradeChecklist:   [{ id, text, checked, options[], selectedOptions[] }],
   rules:            [{ id, text, checked }],
@@ -65,6 +67,18 @@ All state lives in a single object managed by `useReducer` in `App.jsx` and pers
 ```
 
 `DEFAULT` in `AppContext.jsx` defines the initial data. IDs are generated as `max(existing ids) + 1`. Checklist IDs start from 1; rules IDs start from 101 to keep them distinct.
+
+### Pages / tabs layer
+
+`App.jsx` wraps the per-page state in a root structure `{ pages: [{ id, name, history }], activeId }` managed by `rootReducer`. Each page's `history` is a `{ past, present, future }` undo/redo stack (the `historyReducer`); undo/redo are **per page**. Page-level actions (`ADD_PAGE`, `DELETE_PAGE`, `SWITCH_PAGE`, `RENAME_PAGE`) are handled in `rootReducer`; every other action is routed to the active page's history. The whole root (all pages, present state only) is persisted to `localStorage` under the key `fxboyz`; a legacy single-page save is migrated into one page on load. `TabBar.jsx` renders the tabs and the per-page `PresetMenu`.
+
+### Reorderable panels + presets
+
+The Session Checklist top row renders the panels named in `panelOrder` (`ChecklistColumn.jsx`); each is wrapped in a `.panel-block` with a `.panel-grip` drag handle that dispatches `REORDER_PANELS`. `PANEL_KEYS` in `AppContext.jsx` is the canonical list — `migrateState` (in `App.jsx`) drops unknown keys and appends newly-added panels. Presets (`SAVE_PRESET` / `LOAD_PRESET` / `DELETE_PRESET`) capture a full page snapshot (layout included); loading replaces page content but keeps the preset library.
+
+### Sharing presets
+
+There is no backend — presets are shared via a URL hash. `src/lib/presetShare.js` encodes `{ name, snapshot }` as base64url into `#preset=…` (`buildShareLink`); `PresetMenu.jsx`'s 🔗 button copies that link to the clipboard. On load, `SharedPresetBanner.jsx` reads the hash (`parseSharedPreset`, which normalizes the untrusted snapshot against `DEFAULT`/`PANEL_KEYS`) and offers a one-click import via `ADD_PRESET`, then clears the hash. Because the import is read once on mount, a recipient must open the link in a fresh load (the e2e tests reload after navigating to the hash URL).
 
 ### State management pattern
 

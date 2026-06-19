@@ -332,6 +332,160 @@ test('the last remaining page cannot be closed', async ({ page }) => {
   await expect(page.locator('.tab .tab-close')).toHaveCount(0)
 })
 
+// ── Reorderable top panels ─────────────────────────────────────────────────
+
+test('top panels render in the default order', async ({ page }) => {
+  const order = await page.locator('.session-top .panel-block').evaluateAll(
+    els => els.map(e => (e as HTMLElement).dataset.panel)
+  )
+  expect(order).toEqual(['currentTrade', 'marketStructure', 'news', 'aims', 'calculator'])
+})
+
+test('dragging a panel grip reorders the panels and persists', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'native HTML5 DnD not supported under touch emulation')
+  const calcGrip = page.locator('.panel-block[data-panel="calculator"] .panel-grip')
+  const target = page.locator('.panel-block[data-panel="currentTrade"]')
+  await calcGrip.dragTo(target)
+
+  const order = await page.locator('.session-top .panel-block').evaluateAll(
+    els => els.map(e => (e as HTMLElement).dataset.panel)
+  )
+  expect(order[0]).toBe('calculator')
+  expect(order).toContain('currentTrade')
+  expect(order).toHaveLength(5)
+
+  await page.reload()
+  const afterReload = await page.locator('.session-top .panel-block').first().getAttribute('data-panel')
+  expect(afterReload).toBe('calculator')
+})
+
+// ── Presets (per-page full snapshots) ──────────────────────────────────────
+
+test('presets save and restore a full snapshot', async ({ page }) => {
+  await page.locator('#rules-input').fill('PRESET RULE')
+  await page.locator('#rules-input').press('Enter')
+  await expect(page.locator('#rules-list .item-text').last()).toHaveText('PRESET RULE')
+
+  page.once('dialog', d => d.accept('Setup A'))
+  await page.locator('.preset-toggle').click()
+  await page.locator('.preset-save').click()
+  await expect(page.locator('.preset-row')).toHaveCount(1)
+
+  // remove the rule, then load the preset to bring it back
+  await page.locator('#rules-list .item-wrap', { hasText: 'PRESET RULE' }).locator('.del-btn').click()
+  let texts = await page.locator('#rules-list .item-text').allTextContents()
+  expect(texts).not.toContain('PRESET RULE')
+
+  await page.locator('.preset-toggle').click()
+  await page.locator('.preset-row', { hasText: 'Setup A' }).click()
+  texts = await page.locator('#rules-list .item-text').allTextContents()
+  expect(texts).toContain('PRESET RULE')
+})
+
+test('a saved preset captures panel layout', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'native HTML5 DnD not supported under touch emulation')
+  // reorder, then save as preset
+  await page.locator('.panel-block[data-panel="calculator"] .panel-grip')
+    .dragTo(page.locator('.panel-block[data-panel="currentTrade"]'))
+  page.once('dialog', d => d.accept('Calc First'))
+  await page.locator('.preset-toggle').click()
+  await page.locator('.preset-save').click()
+
+  // change layout again (move calculator back down), then load preset to restore it
+  await page.locator('.panel-block[data-panel="currentTrade"] .panel-grip')
+    .dragTo(page.locator('.panel-block[data-panel="aims"]'))
+  await page.locator('.preset-toggle').click()
+  await page.locator('.preset-row', { hasText: 'Calc First' }).click()
+
+  const first = await page.locator('.session-top .panel-block').first().getAttribute('data-panel')
+  expect(first).toBe('calculator')
+})
+
+test('presets are scoped per page', async ({ page }) => {
+  page.once('dialog', d => d.accept('Page 1 preset'))
+  await page.locator('.preset-toggle').click()
+  await page.locator('.preset-save').click()
+  await expect(page.locator('.preset-row')).toHaveCount(1)
+
+  // a new page has its own (empty) preset list
+  await page.locator('.tab-add').click()
+  await page.locator('.preset-toggle').click()
+  await expect(page.locator('.preset-row')).toHaveCount(0)
+  await expect(page.locator('.preset-empty')).toBeVisible()
+})
+
+test('a deleted preset is removed from the list', async ({ page }) => {
+  page.once('dialog', d => d.accept('Temp'))
+  await page.locator('.preset-toggle').click()
+  await page.locator('.preset-save').click()
+  await expect(page.locator('.preset-row')).toHaveCount(1)
+  await page.locator('.preset-row', { hasText: 'Temp' }).locator('.preset-del').click()
+  await expect(page.locator('.preset-row')).toHaveCount(0)
+})
+
+// ── Sharing presets between users ──────────────────────────────────────────
+
+test('sharing a preset copies an import link that another session can import', async ({ page, context, isMobile }) => {
+  test.skip(isMobile, 'clipboard API differs under mobile emulation')
+  await context.grantPermissions(['clipboard-read', 'clipboard-write'])
+
+  // build a distinctive preset
+  await page.locator('#rules-input').fill('SHARED RULE')
+  await page.locator('#rules-input').press('Enter')
+  page.once('dialog', d => d.accept('Shareable'))
+  await page.locator('.preset-toggle').click()
+  await page.locator('.preset-save').click()
+
+  // share it → link goes to the clipboard
+  await page.locator('.preset-row', { hasText: 'Shareable' }).locator('.preset-share').click()
+  await expect(page.locator('.preset-copied')).toBeVisible()
+  const link = await page.evaluate(() => navigator.clipboard.readText())
+  expect(link).toContain('#preset=')
+
+  // simulate a different user: wipe local data, then open the link fresh
+  await page.evaluate(() => localStorage.clear())
+  await page.goto(link)
+  await page.reload()
+
+  await expect(page.locator('.shared-banner')).toBeVisible()
+  await page.locator('.shared-import').click()
+  await expect(page.locator('.shared-banner')).toHaveCount(0)
+
+  // the preset is now in the library and restores the shared content
+  await page.locator('.preset-toggle').click()
+  await expect(page.locator('.preset-row', { hasText: 'Shareable' })).toHaveCount(1)
+  await page.locator('.preset-row', { hasText: 'Shareable' }).click()
+  const texts = await page.locator('#rules-list .item-text').allTextContents()
+  expect(texts).toContain('SHARED RULE')
+})
+
+test('dismissing a shared preset banner does not import it', async ({ page, context, isMobile }) => {
+  test.skip(isMobile, 'clipboard API differs under mobile emulation')
+  await context.grantPermissions(['clipboard-read', 'clipboard-write'])
+
+  page.once('dialog', d => d.accept('Throwaway'))
+  await page.locator('.preset-toggle').click()
+  await page.locator('.preset-save').click()
+  await page.locator('.preset-row', { hasText: 'Throwaway' }).locator('.preset-share').click()
+  const link = await page.evaluate(() => navigator.clipboard.readText())
+
+  await page.evaluate(() => localStorage.clear())
+  await page.goto(link)
+  await page.reload()
+  await page.locator('.shared-dismiss').click()
+  await expect(page.locator('.shared-banner')).toHaveCount(0)
+
+  await page.locator('.preset-toggle').click()
+  await expect(page.locator('.preset-row')).toHaveCount(0)
+})
+
+test('an invalid preset hash shows no banner and does not break the app', async ({ page }) => {
+  await page.goto('/#preset=not-valid-base64!!!')
+  await page.reload()
+  await expect(page.locator('.shared-banner')).toHaveCount(0)
+  await expect(page.locator('h1')).toHaveText('Goldilocks Composure Tool')
+})
+
 // ── Reset all checks ───────────────────────────────────────────────────────
 
 test('reset all checks clears all checked items', async ({ page }) => {

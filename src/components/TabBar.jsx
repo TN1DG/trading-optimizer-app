@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import PresetMenu from './PresetMenu'
 
 export default function TabBar({ pages, activeId, dispatch }) {
   const [editingId, setEditingId] = useState(null)
@@ -66,6 +67,8 @@ export default function TabBar({ pages, activeId, dispatch }) {
         )
       })}
       <button className="tab-add" title="New page" onClick={() => dispatch({ type: 'ADD_PAGE' })}>+</button>
+      <div className="tab-spacer" />
+      <PresetMenu />
     </div>
   )
 }

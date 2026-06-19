@@ -166,6 +166,44 @@ body{background:#1a1a1a}
 .tab-close:hover{color:#ef4444}
 .tab-add{background:#252528;border:0.5px solid #333;border-radius:8px;width:28px;height:28px;font-size:18px;color:#888;cursor:pointer;line-height:1;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:inherit;transition:border-color 0.15s,color 0.15s}
 .tab-add:hover{border-color:#f97316;color:#f97316}
+.tab-spacer{flex:1}
+
+/* ── Presets menu ── */
+.preset-menu{position:relative;flex-shrink:0}
+.preset-toggle{background:#252528;border:0.5px solid #333;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;color:#888;cursor:pointer;letter-spacing:0.04em;text-transform:uppercase;font-family:inherit;transition:border-color 0.15s,color 0.15s}
+.preset-toggle:hover,.preset-toggle.open{border-color:#f97316;color:#f97316}
+.preset-pop{position:absolute;top:calc(100% + 6px);right:0;z-index:300;min-width:200px;background:#252528;border:0.5px solid #3a3a3e;border-radius:10px;padding:6px;box-shadow:0 8px 24px rgba(0,0,0,0.5)}
+.preset-empty{font-size:12px;color:#666;padding:8px 10px;text-align:center}
+.preset-row{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;cursor:pointer;transition:background 0.12s}
+.preset-row:hover{background:#2f2f33}
+.preset-name{flex:1;font-size:13px;color:#e0e0e0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.preset-share{background:none;border:none;color:#888;cursor:pointer;font-size:13px;line-height:1;padding:0 2px;border-radius:4px;flex-shrink:0;transition:opacity 0.15s,color 0.15s;filter:grayscale(0.4)}
+.preset-share:hover{filter:none;color:#f97316}
+.preset-del{background:none;border:none;color:#666;cursor:pointer;font-size:16px;line-height:1;padding:0 2px;border-radius:4px;flex-shrink:0;transition:color 0.15s}
+.preset-del:hover{color:#ef4444}
+.preset-copied{font-size:11px;font-weight:600;color:#4ade80;text-align:center;padding:4px 0 6px}
+.preset-save{width:100%;margin-top:4px;background:#1f1200;border:0.5px solid #f97316;border-radius:6px;padding:7px 10px;font-size:12px;font-weight:600;color:#f97316;cursor:pointer;font-family:inherit;transition:background 0.15s}
+.preset-save:hover{background:#2a1800}
+
+/* ── Shared preset import banner ── */
+.shared-banner{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;row-gap:8px;background:#1f1200;border:0.5px solid #f97316;border-radius:10px;padding:9px 14px;margin-bottom:0.9rem;box-shadow:0 0 14px rgba(249,115,22,0.12)}
+.shared-text{font-size:13px;color:#f5d9a0}
+.shared-actions{display:flex;gap:8px;flex-shrink:0}
+.shared-import{background:#f97316;border:none;border-radius:7px;padding:6px 14px;font-size:12px;font-weight:700;color:#fff;cursor:pointer;font-family:inherit;transition:background 0.15s}
+.shared-import:hover{background:#ea6a0a}
+.shared-dismiss{background:none;border:0.5px solid #555;border-radius:7px;padding:6px 12px;font-size:12px;color:#aaa;cursor:pointer;font-family:inherit;transition:border-color 0.15s,color 0.15s}
+.shared-dismiss:hover{border-color:#888;color:#ddd}
+
+/* ── Reorderable session-top panels ── */
+.panel-block{position:relative;display:flex;flex:none}
+.panel-block.pb-grow{flex:1}
+.panel-block>:not(.panel-grip){flex:1 1 auto}
+.panel-block.panel-drag-over{outline:1.5px dashed #f97316;outline-offset:2px;border-radius:10px}
+.panel-grip{position:absolute;top:3px;right:5px;z-index:6;font-size:11px;line-height:1;color:#888;cursor:grab;opacity:0;padding:2px 3px;border-radius:4px;background:rgba(30,30,34,0.75);transition:opacity 0.15s,color 0.15s}
+.panel-grip:hover{color:#f97316}
+.panel-grip:active{cursor:grabbing}
+.panel-block:hover .panel-grip{opacity:1}
+@media (hover:none){.panel-grip{opacity:0.55}}
 
 @supports (height:100dvh){.app{height:100dvh}}
 

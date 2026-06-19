@@ -1,7 +1,8 @@
 import { useReducer, useEffect, useCallback } from 'react'
-import { AppContext, reducer, DEFAULT } from './context/AppContext'
+import { AppContext, reducer, DEFAULT, PANEL_KEYS } from './context/AppContext'
 import Header from './components/Header'
 import TabBar from './components/TabBar'
+import SharedPresetBanner from './components/SharedPresetBanner'
 import ChecklistColumn from './components/ChecklistColumn'
 import RulesColumn from './components/RulesColumn'
 import Timer from './components/Timer'
@@ -71,6 +72,15 @@ function migrateState(parsed) {
   if (parsed.aimsDone === undefined) parsed.aimsDone = false
   if (parsed.tradeQuotaA === undefined) parsed.tradeQuotaA = ''
   if (parsed.tradeQuotaB === undefined) parsed.tradeQuotaB = ''
+  if (!Array.isArray(parsed.presets)) parsed.presets = []
+  // Panel order: keep saved order, drop unknown keys, append any newly-added panels
+  if (!Array.isArray(parsed.panelOrder)) {
+    parsed.panelOrder = [...PANEL_KEYS]
+  } else {
+    const order = parsed.panelOrder.filter(k => PANEL_KEYS.includes(k))
+    for (const k of PANEL_KEYS) if (!order.includes(k)) order.push(k)
+    parsed.panelOrder = order
+  }
   // Session checklist is always reset to defaults on load — it's a per-session template
   parsed.sessionChecklist = JSON.parse(JSON.stringify(DEFAULT.sessionChecklist))
   if (parsed.checklist && !parsed.tradeChecklist) {
@@ -204,6 +214,7 @@ export default function App() {
   return (
     <AppContext.Provider value={{ state, dispatch, canUndo, canRedo }}>
       <div className="app">
+        <SharedPresetBanner />
         <TabBar pages={root.pages} activeId={root.activeId} dispatch={dispatch} />
         <div className="header-row">
           <div className="header-controls">
