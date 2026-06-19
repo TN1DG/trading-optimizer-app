@@ -8,8 +8,8 @@ test.beforeEach(async ({ page }) => {
 
 // ── Header ──────────────────────────────────────────────────────────────────
 
-test('header shows FX BOYZ TOOL', async ({ page }) => {
-  await expect(page.locator('h1')).toHaveText('FX BOYZ TOOL')
+test('header shows Goldilocks Composure Tool', async ({ page }) => {
+  await expect(page.locator('h1')).toHaveText('Goldilocks Composure Tool')
 })
 
 test('subtitle is double-click editable', async ({ page }) => {
@@ -166,6 +166,15 @@ test('aims inputs persist across reload', async ({ page }) => {
   await firstInput.fill('500')
   await page.reload()
   await expect(page.locator('.currency-btn.active')).toHaveText('£')
+})
+
+test('Aims Done button toggles active and persists', async ({ page }) => {
+  const done = page.locator('.aims-done-btn')
+  await expect(done).not.toHaveClass(/active/)
+  await done.click()
+  await expect(done).toHaveClass(/active/)
+  await page.reload()
+  await expect(page.locator('.aims-done-btn')).toHaveClass(/active/)
 })
 
 // ── Drag within session checklist ──────────────────────────────────────────

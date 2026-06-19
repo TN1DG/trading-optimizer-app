@@ -96,6 +96,9 @@ body{background:#1a1a1a}
 .side-table-input::-webkit-inner-spin-button,.side-table-input::-webkit-outer-spin-button{-webkit-appearance:none}
 .side-table-input:focus{border-bottom-color:#f97316}
 .side-table-input::placeholder{color:#444}
+.aims-done-btn{margin-top:8px;width:100%;background:#252528;border:0.5px solid #3a3a3e;border-radius:6px;padding:6px 10px;font-size:11px;font-weight:700;color:#888;cursor:pointer;letter-spacing:0.06em;text-transform:uppercase;font-family:inherit;transition:all 0.2s}
+.aims-done-btn:hover{border-color:#666;color:#aaa}
+.aims-done-btn.active{background:#0f2a1a;border-color:#16a34a;color:#4ade80;box-shadow:0 0 12px rgba(74,222,128,0.4),0 0 4px rgba(74,222,128,0.3)}
 .currency-toggle{display:flex;gap:4px;margin-bottom:6px}
 .currency-btn{background:#252528;border:0.5px solid #3a3a3e;border-radius:5px;padding:2px 8px;font-size:11px;font-weight:600;color:#555;cursor:pointer;font-family:inherit;transition:all 0.15s}
 .currency-btn.active{background:#1f1200;border-color:#f97316;color:#f97316}
@@ -116,14 +119,15 @@ body{background:#1a1a1a}
 .news-imp-btns{display:flex;gap:6px}
 .imp-btn{flex:none;padding:4px 10px;border-radius:6px;border:0.5px solid #3a3a3e;background:#252528;font-size:11px;font-weight:600;cursor:pointer;letter-spacing:0.04em;text-transform:uppercase;color:#666;transition:all 0.2s;font-family:inherit}
 .imp-btn:hover{border-color:#666;color:#aaa}
-.imp-btn.low.active,.imp-btn.high.active{background:#3d0d0d;border-color:#ef4444;color:#fca5a5;box-shadow:0 0 12px rgba(220,38,38,0.7),0 0 4px rgba(220,38,38,0.4)}
+.imp-btn.high.active{background:#3d0d0d;border-color:#ef4444;color:#fca5a5;box-shadow:0 0 12px rgba(220,38,38,0.7),0 0 4px rgba(220,38,38,0.4)}
+.imp-btn.low.active{background:#1e1800;border-color:#eab308;color:#facc15;box-shadow:0 0 12px rgba(250,204,21,0.6),0 0 4px rgba(250,204,21,0.4)}
 .current-trade-panel{display:flex;flex-direction:column;gap:4px;flex-shrink:0}
 .trade-btns{display:flex;gap:6px}
 .trade-btn{flex:none;padding:4px 12px;border-radius:6px;border:0.5px solid #3a3a3e;background:#252528;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:0.04em;text-transform:uppercase;color:#666;transition:all 0.2s;font-family:inherit}
 .trade-btn:hover{border-color:#666;color:#aaa}
-.trade-btn.buy.active{background:#0f2a1a;border-color:#16a34a;color:#4ade80;box-shadow:0 0 12px rgba(74,222,128,0.45),0 0 4px rgba(74,222,128,0.3)}
+/* Buy and Break Even share the same active green */
+.trade-btn.buy.active,.trade-btn.be.active{background:#0f2a1a;border-color:#16a34a;color:#4ade80;box-shadow:0 0 12px rgba(74,222,128,0.45),0 0 4px rgba(74,222,128,0.3)}
 .trade-btn.sell.active{background:#2a0f0f;border-color:#dc2626;color:#f87171;box-shadow:0 0 12px rgba(248,113,113,0.45),0 0 4px rgba(248,113,113,0.3)}
-.trade-btn.be.active{background:#1e1800;border-color:#eab308;color:#facc15;box-shadow:0 0 12px rgba(250,204,21,0.5),0 0 4px rgba(250,204,21,0.3)}
 @keyframes be-flicker{0%,100%{background:#1e1800;border-color:#eab308;color:#facc15;box-shadow:0 0 10px rgba(250,204,21,0.6)}50%{background:#252528;border-color:#3a3a3e;color:#666;box-shadow:none}}
 .trade-btn.be.flicker{animation:be-flicker 0.9s ease-in-out infinite}
 .trade-inputs{display:flex;gap:12px;margin-top:8px}

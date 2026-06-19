@@ -20,6 +20,7 @@ export const DEFAULT = {
   riskPerTrade: '',
   tradeQuotaA: '',
   tradeQuotaB: '',
+  aimsDone: false,
   sessionChecklist: [
     {
       id: 1,
@@ -83,6 +84,9 @@ export function reducer(state, action) {
 
     case 'SET_RISK_PER_TRADE':
       return { ...state, riskPerTrade: action.payload }
+
+    case 'TOGGLE_AIMS_DONE':
+      return { ...state, aimsDone: !state.aimsDone }
 
     case 'SET_TRADE_QUOTA_A':
       return { ...state, tradeQuotaA: action.payload }
@@ -237,6 +241,7 @@ export function reducer(state, action) {
         tradeBE: false,
         tradeRisk: '',
         tradeTP: '',
+        aimsDone: false,
         sessionChecklist: state.sessionChecklist.map(item => ({ ...item, checked: false })),
         tradeChecklist: state.tradeChecklist.map(item => ({ ...item, checked: false })),
         rules: state.rules.map(item => ({ ...item, checked: false })),

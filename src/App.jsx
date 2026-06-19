@@ -69,6 +69,7 @@ function loadState() {
       if (parsed.maxLossGBP === undefined) parsed.maxLossGBP = ''
       if (parsed.maxLossUSD === undefined) parsed.maxLossUSD = ''
       if (parsed.riskPerTrade === undefined) parsed.riskPerTrade = ''
+      if (parsed.aimsDone === undefined) parsed.aimsDone = false
       if (parsed.tradeQuotaA === undefined) parsed.tradeQuotaA = ''
       if (parsed.tradeQuotaB === undefined) parsed.tradeQuotaB = ''
       // Session checklist is always reset to defaults on load — it's a per-session template

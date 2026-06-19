@@ -26,7 +26,7 @@ export default function Header() {
 
   return (
     <div className="header">
-      <h1>FX BOYZ TOOL</h1>
+      <h1>Goldilocks Composure Tool</h1>
       <div className="subtitle-container">
         {editing ? (
           <input
