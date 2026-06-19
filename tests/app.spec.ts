@@ -267,6 +267,71 @@ test('Risk Per Trade input persists across reload', async ({ page }) => {
   await expect(page.locator('tr', { hasText: 'Risk Per Trade' }).locator('input')).toHaveValue('250')
 })
 
+// ── Pages / Tabs ───────────────────────────────────────────────────────────
+
+test('starts with a single page tab', async ({ page }) => {
+  await expect(page.locator('.tab')).toHaveCount(1)
+  await expect(page.locator('.tab')).toHaveText('Page 1')
+})
+
+test('adding a page creates a new active tab with default state', async ({ page }) => {
+  // dirty page 1 with a trade item
+  await page.locator('input[placeholder="Add trade item..."]').fill('Page 1 item')
+  await page.locator('input[placeholder="Add trade item..."]').press('Enter')
+
+  await page.locator('.tab-add').click()
+  await expect(page.locator('.tab')).toHaveCount(2)
+  await expect(page.locator('.tab.active .tab-label')).toHaveText('Page 2')
+
+  // new page does not carry over page 1's custom item
+  const texts = await page.locator('#trade-list .item-text').allTextContents()
+  expect(texts).not.toContain('Page 1 item')
+})
+
+test('switching tabs keeps each page state independent', async ({ page }) => {
+  await page.locator('input[placeholder="Add trade item..."]').fill('Only on page 1')
+  await page.locator('input[placeholder="Add trade item..."]').press('Enter')
+
+  await page.locator('.tab-add').click() // now on page 2
+  const page2Texts = await page.locator('#trade-list .item-text').allTextContents()
+  expect(page2Texts).not.toContain('Only on page 1')
+
+  // back to page 1 — item is still there
+  await page.locator('.tab').first().click()
+  await expect(page.locator('#trade-list .item-text').last()).toHaveText('Only on page 1')
+})
+
+test('pages persist across reload', async ({ page }) => {
+  await page.locator('.tab-add').click()
+  await expect(page.locator('.tab')).toHaveCount(2)
+  await page.reload()
+  await expect(page.locator('.tab')).toHaveCount(2)
+})
+
+test('double-click renames a tab and persists', async ({ page }) => {
+  const tab = page.locator('.tab').first()
+  await tab.dblclick()
+  await page.locator('.tab-input').fill('Setup A')
+  await page.keyboard.press('Enter')
+  await expect(page.locator('.tab').first()).toContainText('Setup A')
+  await page.reload()
+  await expect(page.locator('.tab').first()).toContainText('Setup A')
+})
+
+test('closing a page removes its tab', async ({ page }) => {
+  await page.locator('.tab-add').click()
+  await expect(page.locator('.tab')).toHaveCount(2)
+  page.on('dialog', d => d.accept())
+  await page.locator('.tab.active .tab-close').click()
+  await expect(page.locator('.tab')).toHaveCount(1)
+})
+
+test('the last remaining page cannot be closed', async ({ page }) => {
+  await expect(page.locator('.tab')).toHaveCount(1)
+  // single page shows no close button
+  await expect(page.locator('.tab .tab-close')).toHaveCount(0)
+})
+
 // ── Reset all checks ───────────────────────────────────────────────────────
 
 test('reset all checks clears all checked items', async ({ page }) => {
