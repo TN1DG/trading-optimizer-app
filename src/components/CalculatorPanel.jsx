@@ -30,6 +30,7 @@ export default function CalculatorPanel() {
   const [op, setOp] = useState(null)
   const [waiting, setWaiting] = useState(false)
   const [ans, setAns] = useState('0')
+  const [expr, setExpr] = useState('')
 
   function inputDigit(d) {
     if (display === 'Err') { setDisplay(d); setWaiting(false); return }
@@ -44,18 +45,24 @@ export default function CalculatorPanel() {
   }
 
   function clearAll() {
-    setDisplay('0'); setPrev(null); setOp(null); setWaiting(false)
+    setDisplay('0'); setPrev(null); setOp(null); setWaiting(false); setExpr('')
   }
 
   function chooseOp(nextOp) {
     const cur = parseFloat(display)
-    if (op && waiting) { setOp(nextOp); return }
+    if (op && waiting) {
+      setOp(nextOp)
+      setExpr(fmt(prev) + ' ' + nextOp)
+      return
+    }
     if (prev === null) {
       setPrev(cur)
+      setExpr(fmt(cur) + ' ' + nextOp)
     } else if (op) {
       const r = compute(prev, cur, op)
       setPrev(r)
       setDisplay(fmt(r))
+      setExpr(fmt(r) + ' ' + nextOp)
     }
     setWaiting(true)
     setOp(nextOp)
@@ -65,6 +72,7 @@ export default function CalculatorPanel() {
     if (op === null || prev === null) return
     const cur = parseFloat(display)
     const r = compute(prev, cur, op)
+    setExpr(fmt(prev) + ' ' + op + ' ' + fmt(cur) + ' =')
     setDisplay(fmt(r))
     setAns(fmt(r))
     setPrev(null); setOp(null); setWaiting(true)
@@ -85,7 +93,10 @@ export default function CalculatorPanel() {
   return (
     <div className="calc-panel">
       <div className="ms-panel-title">Calculator</div>
-      <div className="calc-display">{display}</div>
+      <div className="calc-display">
+        <div className="calc-expr">{expr}</div>
+        <div className="calc-number">{display}</div>
+      </div>
       <div className="calc-keys">
         {KEYS.flat().map(k => (
           <button
