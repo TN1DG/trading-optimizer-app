@@ -10,10 +10,9 @@ function compute(a, b, op) {
   }
 }
 
-// Trim float noise (e.g. 0.1 + 0.2) without forcing trailing zeros
 function fmt(n) {
   if (!isFinite(n)) return 'Err'
-  return String(parseFloat(n.toPrecision(12)))
+  return n.toFixed(2)
 }
 
 const KEYS = [
@@ -25,44 +24,60 @@ const KEYS = [
 const OPS = ['+', '−', '×', '÷']
 
 export default function CalculatorPanel() {
-  const [display, setDisplay] = useState('0')
-  const [prev, setPrev] = useState(null)
+  const [display, setDisplay] = useState('0')   // visual label (may be 'Ans' or 'Err')
+  const [val, setVal] = useState(0)              // numeric value behind display
+  const [prev, setPrev] = useState(null)         // stored left operand
+  const [prevLabel, setPrevLabel] = useState('') // display string when prev was captured
   const [op, setOp] = useState(null)
   const [waiting, setWaiting] = useState(false)
-  const [ans, setAns] = useState('0')
+  const [ans, setAns] = useState(0)
   const [expr, setExpr] = useState('')
 
+  function setNum(label, num) {
+    setDisplay(label)
+    setVal(num)
+  }
+
   function inputDigit(d) {
-    if (display === 'Err') { setDisplay(d); setWaiting(false); return }
-    if (waiting) { setDisplay(d); setWaiting(false) }
-    else setDisplay(display === '0' ? d : display + d)
+    if (display === 'Err') { setNum(d, parseFloat(d)); setWaiting(false); return }
+    if (waiting || display === 'Ans') {
+      setNum(d, parseFloat(d))
+      setWaiting(false)
+    } else {
+      const next = display === '0' ? d : display + d
+      setDisplay(next)
+      setVal(parseFloat(next))
+    }
   }
 
   function inputDot() {
-    if (display === 'Err') { setDisplay('0.'); setWaiting(false); return }
-    if (waiting) { setDisplay('0.'); setWaiting(false); return }
+    if (display === 'Err' || display === 'Ans' || waiting) {
+      setDisplay('0.'); setVal(0); setWaiting(false); return
+    }
     if (!display.includes('.')) setDisplay(display + '.')
   }
 
   function clearAll() {
-    setDisplay('0'); setPrev(null); setOp(null); setWaiting(false); setExpr('')
+    setNum('0', 0); setPrev(null); setPrevLabel(''); setOp(null); setWaiting(false); setExpr('')
   }
 
   function chooseOp(nextOp) {
-    const cur = parseFloat(display)
     if (op && waiting) {
       setOp(nextOp)
-      setExpr(fmt(prev) + ' ' + nextOp)
+      setExpr(prevLabel + ' ' + nextOp)
       return
     }
     if (prev === null) {
-      setPrev(cur)
-      setExpr(fmt(cur) + ' ' + nextOp)
+      setPrev(val)
+      setPrevLabel(display)
+      setExpr(display + ' ' + nextOp)
     } else if (op) {
-      const r = compute(prev, cur, op)
+      const r = compute(prev, val, op)
+      const rLabel = fmt(r)
       setPrev(r)
-      setDisplay(fmt(r))
-      setExpr(fmt(r) + ' ' + nextOp)
+      setPrevLabel(rLabel)
+      setNum(rLabel, r)
+      setExpr(rLabel + ' ' + nextOp)
     }
     setWaiting(true)
     setOp(nextOp)
@@ -70,16 +85,17 @@ export default function CalculatorPanel() {
 
   function equals() {
     if (op === null || prev === null) return
-    const cur = parseFloat(display)
-    const r = compute(prev, cur, op)
-    setExpr(fmt(prev) + ' ' + op + ' ' + fmt(cur) + ' =')
-    setDisplay(fmt(r))
-    setAns(fmt(r))
-    setPrev(null); setOp(null); setWaiting(true)
+    const r = compute(prev, val, op)
+    const rLabel = fmt(r)
+    setExpr(prevLabel + ' ' + op + ' ' + display + ' =')
+    setNum(rLabel, r)
+    setAns(r)
+    setPrev(null); setPrevLabel(''); setOp(null); setWaiting(true)
   }
 
   function inputAns() {
-    setDisplay(ans)
+    setDisplay('Ans')
+    setVal(ans)
     setWaiting(false)
   }
 
