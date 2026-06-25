@@ -36,8 +36,22 @@ export function normalizeSnapshot(snapshot) {
   return merged
 }
 
+// Only encode fields that differ from DEFAULT to keep URLs short.
+// sessionChecklist is always reset to DEFAULT on load so it's never needed.
+// normalizeSnapshot fills back in any omitted fields when the link is opened.
+function diffFromDefault(snapshot) {
+  const delta = {}
+  for (const key of Object.keys(snapshot)) {
+    if (key === 'sessionChecklist') continue
+    if (JSON.stringify(snapshot[key]) !== JSON.stringify(DEFAULT[key])) {
+      delta[key] = snapshot[key]
+    }
+  }
+  return delta
+}
+
 export function buildShareLink(preset) {
-  const payload = encodePreset({ name: preset.name, snapshot: preset.snapshot })
+  const payload = encodePreset({ name: preset.name, snapshot: diffFromDefault(preset.snapshot) })
   return `${location.origin}${location.pathname}#preset=${payload}`
 }
 
