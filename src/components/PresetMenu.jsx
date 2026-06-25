@@ -3,8 +3,7 @@ import { useApp } from '../context/AppContext'
 import { buildShareLink } from '../lib/presetShare'
 
 export default function PresetMenu() {
-  const { state, dispatch } = useApp()
-  const presets = state.presets || []
+  const { presets = [], dispatch } = useApp()
   const [open, setOpen] = useState(false)
   const [copied, setCopied] = useState(false)
   const ref = useRef(null)

@@ -9,10 +9,13 @@ export default function Timer() {
   const [running, setRunning] = useState(false)
   const [done, setDone] = useState(false)
   const [showInputs, setShowInputs] = useState(true)
+  const [preWarned, setPreWarned] = useState(false)
   const intervalRef = useRef(null)
   const minRef = useRef(null)
   const secRef = useRef(null)
   const leftRef = useRef(0)
+  const totalRef = useRef(0)
+  const preWarnFiredRef = useRef(false)
 
   useEffect(() => {
     leftRef.current = left
@@ -28,6 +31,7 @@ export default function Timer() {
       if (seconds <= 0) return
       setLeft(seconds)
       leftRef.current = seconds
+      totalRef.current = seconds
     }
     setDone(false)
     setShowInputs(false)
@@ -35,6 +39,10 @@ export default function Timer() {
     intervalRef.current = setInterval(() => {
       leftRef.current -= 1
       setLeft(leftRef.current)
+      if (leftRef.current === 900 && totalRef.current > 900 && !preWarnFiredRef.current) {
+        preWarnFiredRef.current = true
+        setPreWarned(true)
+      }
       if (leftRef.current <= 0) {
         clearInterval(intervalRef.current)
         setRunning(false)
@@ -55,6 +63,9 @@ export default function Timer() {
     setLeft(0)
     leftRef.current = 0
     setShowInputs(true)
+    setPreWarned(false)
+    preWarnFiredRef.current = false
+    totalRef.current = 0
     if (minRef.current) minRef.current.value = ''
     if (secRef.current) secRef.current.value = ''
   }
@@ -62,7 +73,7 @@ export default function Timer() {
   return (
     <div
       id="timer-bar"
-      className={done ? 'done' : ''}
+      className={done ? 'done' : preWarned ? 'pre-warn' : ''}
       onClick={done ? reset : undefined}
     >
       <span className="timer-label">Trade Cool Down</span>

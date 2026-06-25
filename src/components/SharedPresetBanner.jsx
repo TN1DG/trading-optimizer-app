@@ -23,7 +23,7 @@ export default function SharedPresetBanner() {
   return (
     <div className="shared-banner">
       <span className="shared-text">
-        📥 Someone shared the preset “<strong>{shared.name}</strong>”. Add it to this page’s presets?
+        📥 Someone shared the preset “<strong>{shared.name}</strong>”. Add it to your presets?
       </span>
       <div className="shared-actions">
         <button className="shared-import" onClick={importIt}>Import preset</button>

@@ -1,22 +1,19 @@
 // Share presets between users via a URL hash — no backend required.
-// A shared link looks like:  https://app/#preset=<base64url(JSON({name, snapshot}))>
+// A shared link looks like:  https://app/#preset=<lz-compressed(JSON({name, snapshot}))>
+import LZString from 'lz-string'
 import { DEFAULT, PANEL_KEYS } from '../context/AppContext'
 
-function bytesToB64url(bytes) {
-  let bin = ''
-  const chunk = 0x8000
-  for (let i = 0; i < bytes.length; i += chunk) {
-    bin += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk))
-  }
-  return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
-}
-
 export function encodePreset(obj) {
-  const bytes = new TextEncoder().encode(JSON.stringify(obj))
-  return bytesToB64url(bytes)
+  return LZString.compressToEncodedURIComponent(JSON.stringify(obj))
 }
 
 export function decodePreset(s) {
+  // Try lz-string first (new format)
+  try {
+    const d = LZString.decompressFromEncodedURIComponent(s)
+    if (d) return JSON.parse(d)
+  } catch {}
+  // Legacy base64url fallback (links shared before lz-string was added)
   let b64 = s.replace(/-/g, '+').replace(/_/g, '/')
   while (b64.length % 4) b64 += '='
   const bin = atob(b64)

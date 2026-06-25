@@ -401,17 +401,17 @@ test('a saved preset captures panel layout', async ({ page, isMobile }) => {
   expect(first).toBe('calculator')
 })
 
-test('presets are scoped per page', async ({ page }) => {
-  page.once('dialog', d => d.accept('Page 1 preset'))
+test('presets are global across pages', async ({ page }) => {
+  page.once('dialog', d => d.accept('Global preset'))
   await page.locator('.preset-toggle').click()
   await page.locator('.preset-save').click()
   await expect(page.locator('.preset-row')).toHaveCount(1)
 
-  // a new page has its own (empty) preset list
+  // switching to a new page should still show the same global preset
   await page.locator('.tab-add').click()
   await page.locator('.preset-toggle').click()
-  await expect(page.locator('.preset-row')).toHaveCount(0)
-  await expect(page.locator('.preset-empty')).toBeVisible()
+  await expect(page.locator('.preset-row')).toHaveCount(1)
+  await expect(page.locator('.preset-row', { hasText: 'Global preset' })).toBeVisible()
 })
 
 test('a deleted preset is removed from the list', async ({ page }) => {

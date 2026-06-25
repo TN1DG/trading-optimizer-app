@@ -25,7 +25,6 @@ export const DEFAULT = {
   tradeQuotaB: '',
   aimsDone: false,
   panelOrder: [...PANEL_KEYS],
-  presets: [],
   sessionChecklist: [
     {
       id: 1,
@@ -53,10 +52,6 @@ export const DEFAULT = {
 
 function nextId(items) {
   return items.length ? Math.max(...items.map(x => x.id)) + 1 : 1
-}
-
-function genId() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7)
 }
 
 export function reducer(state, action) {
@@ -253,29 +248,6 @@ export function reducer(state, action) {
       order.splice(to, 0, action.fromKey)
       return { ...state, panelOrder: order }
     }
-
-    case 'SAVE_PRESET': {
-      const name = (action.name || '').trim()
-      if (!name) return state
-      const { presets, ...snapshot } = state
-      return { ...state, presets: [...presets, { id: genId(), name, snapshot }] }
-    }
-
-    case 'ADD_PRESET': {
-      const name = (action.name || '').trim()
-      if (!name || !action.snapshot || typeof action.snapshot !== 'object') return state
-      return { ...state, presets: [...state.presets, { id: genId(), name, snapshot: action.snapshot }] }
-    }
-
-    case 'LOAD_PRESET': {
-      const preset = state.presets.find(p => p.id === action.id)
-      if (!preset) return state
-      // Full snapshot replaces page content, but keep the preset library itself
-      return { ...preset.snapshot, presets: state.presets }
-    }
-
-    case 'DELETE_PRESET':
-      return { ...state, presets: state.presets.filter(p => p.id !== action.id) }
 
     case 'RESET_ALL':
       return {

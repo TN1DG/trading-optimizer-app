@@ -72,7 +72,7 @@ function migrateState(parsed) {
   if (parsed.aimsDone === undefined) parsed.aimsDone = false
   if (parsed.tradeQuotaA === undefined) parsed.tradeQuotaA = ''
   if (parsed.tradeQuotaB === undefined) parsed.tradeQuotaB = ''
-  if (!Array.isArray(parsed.presets)) parsed.presets = []
+  delete parsed.presets // presets now live at root level
   // Panel order: keep saved order, drop unknown keys, append any newly-added panels
   if (!Array.isArray(parsed.panelOrder)) {
     parsed.panelOrder = [...PANEL_KEYS]
@@ -106,7 +106,7 @@ function makePage(name, state) {
 
 function freshRoot() {
   const page = makePage('Page 1', freshState())
-  return { pages: [page], activeId: page.id }
+  return { pages: [page], activeId: page.id, presets: [] }
 }
 
 // Build a page's runtime shape (with empty history) from persisted data.
@@ -128,11 +128,26 @@ function loadRoot() {
         const pages = parsed.pages.map((p, i) => pageFromPersisted(p, `Page ${i + 1}`))
         if (!pages.length) return freshRoot()
         const activeId = pages.some(p => p.id === parsed.activeId) ? parsed.activeId : pages[0].id
-        return { pages, activeId }
+        // Root-level presets (new shape) OR one-time migration from per-page presets
+        let presets = []
+        if (Array.isArray(parsed.presets)) {
+          presets = parsed.presets
+        } else {
+          const seen = new Set()
+          for (const p of parsed.pages) {
+            if (Array.isArray(p.state?.presets)) {
+              for (const pr of p.state.presets) {
+                if (!seen.has(pr.id)) { seen.add(pr.id); presets.push(pr) }
+              }
+            }
+          }
+        }
+        return { pages, activeId, presets }
       }
-      // Legacy single-page shape → wrap into one page
+      // Legacy single-page shape → wrap into one page, lift presets to root
+      const legacyPresets = Array.isArray(parsed.presets) ? parsed.presets : []
       const page = makePage('Page 1', migrateState(parsed))
-      return { pages: [page], activeId: page.id }
+      return { pages: [page], activeId: page.id, presets: legacyPresets }
     }
   } catch (e) {}
   return freshRoot()
@@ -142,7 +157,7 @@ function rootReducer(root, action) {
   switch (action.type) {
     case 'ADD_PAGE': {
       const page = makePage(`Page ${root.pages.length + 1}`, freshState())
-      return { pages: [...root.pages, page], activeId: page.id }
+      return { ...root, pages: [...root.pages, page], activeId: page.id }
     }
     case 'SWITCH_PAGE':
       return root.pages.some(p => p.id === action.id) ? { ...root, activeId: action.id } : root
@@ -160,8 +175,42 @@ function rootReducer(root, action) {
       if (activeId === action.id) {
         activeId = (pages[idx] || pages[idx - 1] || pages[0]).id
       }
-      return { pages, activeId }
+      return { ...root, pages, activeId }
     }
+    case 'SAVE_PRESET': {
+      const name = (action.name || '').trim()
+      if (!name) return root
+      const activePage = root.pages.find(p => p.id === root.activeId)
+      if (!activePage) return root
+      const snapshot = { ...activePage.history.present }
+      return { ...root, presets: [...root.presets, { id: genPageId(), name, snapshot }] }
+    }
+
+    case 'ADD_PRESET': {
+      const name = (action.name || '').trim()
+      if (!name || !action.snapshot || typeof action.snapshot !== 'object') return root
+      return { ...root, presets: [...root.presets, { id: genPageId(), name, snapshot: action.snapshot }] }
+    }
+
+    case 'LOAD_PRESET': {
+      const preset = root.presets.find(p => p.id === action.id)
+      if (!preset) return root
+      const idx = root.pages.findIndex(p => p.id === root.activeId)
+      if (idx === -1) return root
+      const page = root.pages[idx]
+      const newHistory = {
+        past: [...page.history.past, page.history.present].slice(-HISTORY_LIMIT),
+        present: { ...preset.snapshot },
+        future: [],
+      }
+      const pages = root.pages.slice()
+      pages[idx] = { ...page, history: newHistory }
+      return { ...root, pages }
+    }
+
+    case 'DELETE_PRESET':
+      return { ...root, presets: root.presets.filter(p => p.id !== action.id) }
+
     default: {
       // Route every other action to the active page's history reducer
       const idx = root.pages.findIndex(p => p.id === root.activeId)
@@ -188,6 +237,7 @@ export default function App() {
       const persist = {
         pages: root.pages.map(p => ({ id: p.id, name: p.name, state: p.history.present })),
         activeId: root.activeId,
+        presets: root.presets,
       }
       localStorage.setItem(STORAGE_KEY, JSON.stringify(persist))
     } catch (e) {}
@@ -212,7 +262,7 @@ export default function App() {
   }, [handleKeyDown])
 
   return (
-    <AppContext.Provider value={{ state, dispatch, canUndo, canRedo }}>
+    <AppContext.Provider value={{ state, dispatch, canUndo, canRedo, presets: root.presets }}>
       <div className="app">
         <SharedPresetBanner />
         <TabBar pages={root.pages} activeId={root.activeId} dispatch={dispatch} />

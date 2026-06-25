@@ -29,6 +29,7 @@ export default function CalculatorPanel() {
   const [prev, setPrev] = useState(null)
   const [op, setOp] = useState(null)
   const [waiting, setWaiting] = useState(false)
+  const [ans, setAns] = useState('0')
 
   function inputDigit(d) {
     if (display === 'Err') { setDisplay(d); setWaiting(false); return }
@@ -65,7 +66,13 @@ export default function CalculatorPanel() {
     const cur = parseFloat(display)
     const r = compute(prev, cur, op)
     setDisplay(fmt(r))
+    setAns(fmt(r))
     setPrev(null); setOp(null); setWaiting(true)
+  }
+
+  function inputAns() {
+    setDisplay(ans)
+    setWaiting(false)
   }
 
   function handleKey(k) {
@@ -87,6 +94,7 @@ export default function CalculatorPanel() {
             onClick={() => handleKey(k)}
           >{k}</button>
         ))}
+        <button className="calc-key ans" onClick={inputAns}>Ans</button>
         <button className="calc-key clear" onClick={clearAll}>C</button>
       </div>
     </div>
